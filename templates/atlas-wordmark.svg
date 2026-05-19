@@ -1,0 +1,17 @@
+<svg width="280" height="80" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Placeholder wordmark — replace with the target product's real Logo.svg -->
+  <defs>
+    <linearGradient id="atlasGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#0B494B"/>
+      <stop offset="100%" stop-color="#1CB4BA"/>
+    </linearGradient>
+  </defs>
+  <!-- mark: stacked wave glyph -->
+  <g transform="translate(8,18)">
+    <path d="M2 14 Q14 4 28 14 T54 14"  stroke="url(#atlasGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M2 28 Q14 18 28 28 T54 28" stroke="url(#atlasGrad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.75"/>
+    <path d="M2 42 Q14 32 28 42 T54 42" stroke="url(#atlasGrad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.45"/>
+  </g>
+  <!-- wordmark: Atlas in Inter Tight 800 -->
+  <text x="80" y="56" font-family="Inter Tight, Inter, sans-serif" font-weight="800" font-size="56" letter-spacing="-2.5" fill="#111827">Atlas</text>
+</svg>

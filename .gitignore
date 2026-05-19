@@ -1,0 +1,22 @@
+# Render artifacts
+frames/
+frames-zoom/
+*.mp4
+!examples/**/*.mp4
+
+# Playwright (installed on demand)
+node_modules/
+package.json
+package-lock.json
+
+# Smoke captures
+smoke_*.png
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp

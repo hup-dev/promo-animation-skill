@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas Trade Intelligence — Promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;425;475;500;600;700;800&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --text-primary: #111827;
+    --text-body:    #374151;
+    --text-secondary:#6B7280;
+    --text-muted:   #9CA3AF;
+    --bg-page:      #F3F4F6;
+    --bg-surface:   #FFFFFF;
+    --bg-hover:     #F9FAFB;
+    --border-default: #E5E7EB;
+    --border-light:   #F3F4F6;
+    --chat-border:    #ebebeb;
+    --genui-border:   #E6E4E1;
+    --brand-primary: #0B494B;
+    --brand-primary-hover: #093B3D;
+    --brand-accent:  #1CB4BA;
+    --brand-accent-focus: rgba(28,180,186,0.24);
+    --success: #059669;
+    --success-bg: #ECFDF5;
+    --warning: #D97706;
+    --warning-bg: #FEF3C7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; background:#fff; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    color: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stage {
+    width: 1920px; height: 1080px; position:relative; overflow:hidden;
+    background:
+      radial-gradient(900px 600px at 18% 8%, rgba(28,180,186,0.07), transparent 60%),
+      radial-gradient(800px 500px at 88% 92%, rgba(11,73,75,0.06), transparent 60%),
+      var(--bg-page);
+    transform-origin: center center;
+  }
+  .stage::after {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(17,24,39,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17,24,39,0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  /* ===== app window ===== */
+  .appwin {
+    position:absolute; left: 210px; top: 100px;
+    width: 1500px; height: 880px;
+    background: var(--bg-surface);
+    border: 1px solid rgba(229,231,235,0.8);
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(17,24,39,0.10), 0 2px 8px rgba(17,24,39,0.04);
+    overflow: hidden;
+    transform-origin: 50% 50%;
+    transform: scale(1);
+    will-change: transform;
+  }
+  .winbar {
+    height: 44px; display:flex; align-items:center; gap: 8px;
+    padding: 0 14px; border-bottom: 1px solid var(--border-light);
+    background: var(--bg-hover);
+  }
+  .winbar .dot { width:11px; height:11px; border-radius:50%; background:#E5E7EB; border:1px solid #D1D5DB; }
+  .winbar .dot.r { background:#FEE2E2; border-color:#FCA5A5; }
+  .winbar .dot.y { background:#FEF3C7; border-color:#FDE68A; }
+  .winbar .dot.g { background:#D1FAE5; border-color:#A7F3D0; }
+  .winbar .url {
+    margin-left: 16px; padding: 6px 14px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--border-default);
+    font-size: 12px; color: var(--text-secondary);
+    display:flex; align-items:center; gap: 8px;
+  }
+  .winbar .url .lock { color: var(--text-muted); font-size: 11px; }
+
+  .main { position:absolute; left:0; right:0; top:44px; bottom:0; background: var(--bg-surface); }
+  .main-head {
+    padding: 18px 36px; border-bottom: 1px solid var(--border-light);
+    display:flex; align-items:center; gap: 14px;
+  }
+  .main-head .brand-img { height: 28px; width: auto; display:block; }
+  .main-head .slash { color: var(--text-muted); font-size: 18px; font-weight: 300; }
+  .main-head .title {
+    font-family: 'Inter Tight','Inter',sans-serif;
+    font-size: 18px; font-weight: 500; color: var(--text-body);
+    letter-spacing: -0.01em;
+  }
+  .main-head .badge {
+    margin-left: auto; padding: 4px 10px; border-radius: 999px;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--brand-primary); background: rgba(28,180,186,0.12);
+    border: 1px solid rgba(28,180,186,0.32);
+  }
+
+  .chatpane { position:absolute; left:0; right:0; top:65px; bottom:0; padding: 18px 120px 16px; }
+
+  /* ===== user message (top) ===== */
+  .userbubble {
+    position:absolute; left:120px; right:120px; top: 14px;
+    display:flex; justify-content: flex-end; opacity:0;
+  }
+  .userbubble .b {
+    max-width: 80%;
+    background: #E6ECED; color: #1F2D2D;
+    padding: 11px 16px;
+    border-radius: 14px 14px 4px 14px;
+    font-size: 17px; font-weight: 475; line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+
+  /* ===== AI thinking bubble (intro + tools) ===== */
+  .aibubble {
+    position:absolute; left:120px; right:120px;
+    background: var(--bg-surface);
+    border: 1px solid var(--chat-border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(17,24,39,0.04), 0 1px 2px rgba(0,0,0,0.03);
+    opacity:0; transform: translateY(8px);
+  }
+  .aibubble.thinking { top: 96px; }
+  .aibubble.result   { top: 96px; padding: 22px 26px; }
+
+  .ai-head {
+    display:flex; align-items:center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ai-head .sparkle {
+    width:24px; height:24px; border-radius: 6px;
+    background: linear-gradient(135deg, #1CB4BA, #0B494B);
+    color: white; font-size: 13px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 1px 3px rgba(11,73,75,0.3);
+  }
+  .ai-head .name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .ai-head .ts { font-size: 11px; color: var(--text-muted); margin-left: 2px; }
+
+  .intro-msg {
+    font-size: 16px; color: var(--text-body); line-height: 1.45;
+    margin-bottom: 14px;
+  }
+  .intro-msg .acc { color: var(--brand-primary); font-weight: 600; }
+
+  /* longer, more dramatic tool-chip list (vertical stack for scene 1) */
+  .toolchain { display:flex; flex-direction:column; gap: 8px; }
+  .tool-row {
+    display:flex; align-items:center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text-secondary);
+    opacity: 0; transform: translateX(-4px);
+  }
+  .tool-row .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--brand-accent);
+    box-shadow: 0 0 0 0 rgba(28,180,186,0.45);
+    flex-shrink: 0;
+    transition: background 200ms, box-shadow 200ms;
+  }
+  .tool-row.running .dot {
+    animation: ringpulse 1s ease-in-out infinite;
+  }
+  .tool-row.done .dot {
+    background: var(--success);
+    box-shadow: 0 0 0 4px rgba(5,150,105,0.10);
+  }
+  .tool-row.done .tn { color: var(--text-body); }
+  .tool-row .tn { color: var(--text-secondary); flex: 1; }
+  .tool-row .tcount { color: var(--text-muted); font-size: 11px; }
+  .tool-row.done::after {
+    content: "✓"; color: var(--success); font-size: 13px; font-family: 'Inter', sans-serif;
+  }
+  @keyframes ringpulse {
+    0%   { box-shadow: 0 0 0 0 rgba(28,180,186,0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(28,180,186,0); }
+    100% { box-shadow: 0 0 0 0 rgba(28,180,186,0); }
+  }
+
+  /* ===== AI result bubble — GenUI host ===== */
+  .result-intro {
+    font-size: 17px; color: var(--text-body); line-height: 1.4;
+    margin-bottom: 18px;
+  }
+  .result-intro .em { color: var(--text-primary); font-weight: 600; }
+
+  /* GenUI hero card */
+  .genui-hero {
+    border: 1px solid var(--genui-border);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #FCFCFB 0%, #ffffff 100%);
+    padding: 22px 26px;
+    opacity: 0; transform: translateY(8px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .gh-top {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .gh-rank {
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--brand-primary); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    font-family: 'Inter', sans-serif;
+  }
+  .gh-cat {
+    font-size: 11px; color: var(--text-muted); font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+  }
+  .gh-title {
+    font-family: 'Inter Tight','Inter',sans-serif;
+    font-size: 26px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.018em; line-height: 1.15;
+  }
+  .gh-sub {
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text-secondary);
+  }
+  .gh-bigrow {
+    margin-top: 16px;
+    display: flex; align-items: flex-end; gap: 14px;
+  }
+  .gh-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 56px; font-weight: 800; color: var(--success);
+    letter-spacing: -0.025em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .gh-unit { font-size: 14px; color: var(--text-secondary); margin-bottom: 6px; }
+  .gh-cap {
+    margin-top: 10px;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.4;
+  }
+  .gh-actions {
+    margin-top: 18px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .gh-btn {
+    padding: 9px 14px; border-radius: 8px;
+    border: 1px solid var(--border-default);
+    background: #fff; color: var(--text-body);
+    font-size: 14px; font-weight: 500;
+    display:inline-flex; align-items:center; gap: 6px;
+    opacity: 0; transform: translateY(4px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .gh-btn.primary {
+    background: var(--brand-primary); color: #fff; border-color: var(--brand-primary);
+    box-shadow: 0 1px 2px rgba(11,73,75,0.18);
+  }
+  .gh-btn.primary .ic { color: #fff; }
+  .gh-btn .ic { color: var(--text-muted); font-size: 13px; }
+
+  /* secondary opportunity chips */
+  .gh-others {
+    margin-top: 18px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .gh-others .lbl-row {
+    width: 100%; margin-bottom: 4px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .opp-chip {
+    padding: 7px 12px; border-radius: 8px;
+    background: #fff; border: 1px solid var(--border-default);
+    font-size: 13px; color: var(--text-body); font-weight: 475;
+    display:flex; align-items:center; gap: 10px;
+    opacity: 0; transform: translateY(4px);
+  }
+  .opp-chip .rk {
+    color: var(--text-muted); font-family:'JetBrains Mono',monospace;
+    font-size: 12px; font-weight: 600;
+  }
+  .opp-chip .amt {
+    color: var(--success); font-family:'JetBrains Mono',monospace;
+    font-weight: 700; font-size: 13px;
+  }
+
+  /* ===== GenUI ruling card (scene 2 variant) ===== */
+  .genui-ruling {
+    border: 1px solid var(--genui-border);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #FCFCFB 0%, #ffffff 100%);
+    padding: 22px 26px;
+    opacity: 0; transform: translateY(8px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .gr-top {
+    display:flex; align-items:center; gap: 10px; margin-bottom: 8px;
+  }
+  .gr-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(11,73,75,0.08); color: var(--brand-primary);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 14px; font-weight: 600;
+  }
+  .gr-badge {
+    padding: 3px 9px; border-radius: 999px;
+    background: rgba(11,73,75,0.10); color: var(--brand-primary);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .gr-case {
+    font-family: 'Inter Tight','Inter',sans-serif;
+    font-size: 22px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.015em; line-height: 1.15;
+  }
+  .gr-court {
+    margin-top: 3px;
+    font-size: 13px; color: var(--text-secondary);
+  }
+  .gr-quote {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--brand-accent);
+    background: #F9FAFB;
+    border-radius: 0 8px 8px 0;
+    font-size: 17px; color: var(--text-primary);
+    font-style: italic; line-height: 1.4; font-weight: 475;
+  }
+  .gr-detail {
+    margin-top: 12px;
+    font-size: 14px; color: var(--text-body); line-height: 1.45;
+  }
+  .gr-transition {
+    margin-top: 18px;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px;
+    align-items: center;
+  }
+  .gr-side {
+    padding: 14px 16px;
+    background: #FAFAFA;
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+  }
+  .gr-side.to { background: var(--success-bg); border-color: rgba(5,150,105,0.30); }
+  .gr-side .lbl {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .gr-side.to .lbl { color: var(--success); }
+  .gr-side .hcode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; color: var(--text-secondary); margin-top: 4px;
+  }
+  .gr-side .duty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px; font-weight: 700; color: var(--text-primary);
+    margin-top: 2px; letter-spacing: -0.015em;
+  }
+  .gr-side.to .duty { color: var(--success); }
+  .gr-side .name { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .gr-arrow {
+    color: var(--brand-primary); font-size: 28px; font-weight: 600;
+  }
+  .gr-impact {
+    margin-top: 14px;
+    display:flex; align-items:center; gap: 10px;
+    font-size: 14px; color: var(--text-body);
+  }
+  .gr-impact .amt {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; color: var(--success); font-size: 18px;
+  }
+  .gr-actions {
+    margin-top: 18px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+
+  /* ===== composer ===== */
+  .composer {
+    position:absolute; left: 120px; right: 120px; bottom: 24px;
+    background: #fff;
+    border: 1px solid #E6E7E7;
+    border-radius: 10px;
+    padding: 14px 18px 12px;
+    box-shadow: 0 4px 12px rgba(17,24,39,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .composer.focused {
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 4px var(--brand-accent-focus), 0 4px 12px rgba(17,24,39,0.06);
+  }
+  .composer-row1 { display:flex; align-items:center; gap: 12px; min-height: 28px; }
+  .composer .spark {
+    width: 28px; height: 28px; display:flex; align-items:center; justify-content:center;
+    color: #687071; font-size: 18px;
+  }
+  .composer .q {
+    flex: 1; font-size: 18px; color: #031112; font-weight: 425;
+    white-space: nowrap; overflow:hidden; min-height: 24px; line-height: 1.3;
+  }
+  .composer .q.empty { color: var(--text-muted); }
+  .composer .caret {
+    display:inline-block; width:2px; height:22px; background: var(--brand-primary);
+    vertical-align: middle; margin-left: 2px; transform: translateY(3px);
+  }
+  .composer-row2 { display:flex; justify-content: space-between; align-items:center; margin-top: 10px; }
+  .composer .plus {
+    width: 30px; height: 30px; border:1px solid #E8EBED; border-radius: 8px;
+    display:flex; align-items:center; justify-content:center; color:#687071; font-size: 18px;
+  }
+  .composer .send {
+    background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), var(--brand-primary);
+    color: #fff; padding: 8px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    display:flex; align-items:center; gap: 5px;
+    box-shadow: 0 1px 2px rgba(11,73,75,0.18);
+    transition: none;
+  }
+  .composer .send.disabled { background: #E8EBED; color: #8E9494; box-shadow:none; }
+  .composer .send.pulse {
+    box-shadow:
+      0 0 0 6px rgba(28,180,186,0.32),
+      0 0 0 12px rgba(28,180,186,0.18),
+      0 4px 14px rgba(11,73,75,0.32);
+    transform: scale(1.06);
+  }
+  .composer .disclaim { margin-top: 8px; font-size: 11px; color: #8E9494; }
+  .composer .disclaim u { color: #33404D; text-decoration: underline; font-weight: 500; }
+
+  /* ===== scene mgmt ===== */
+  .scene { position:absolute; inset:0; opacity:0; will-change: opacity; }
+
+  /* cold open */
+  .cold-stack {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap: 26px;
+  }
+  .cold-head {
+    font-family:'Inter Tight','Inter',sans-serif;
+    font-size: 92px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.04em; text-align:center; line-height: 1.02;
+  }
+  .cold-head .accent {
+    background: linear-gradient(180deg, #0B494B 0%, #1CB4BA 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .cold-sub { font-size: 24px; color: var(--text-secondary); font-weight: 475; }
+  .floaters { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .floater {
+    position:absolute; font-family: 'JetBrains Mono', monospace;
+    font-size: 20px; color: rgba(11,73,75,0.16); font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* logo out */
+  .logo-wrap {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap: 22px;
+  }
+  .logo-row { display:flex; flex-direction: column; align-items: center; gap: 8px; }
+  .logo-full { width: 520px; height: auto; display:block; }
+  .logo-sub { font-size: 28px; color: var(--text-secondary); font-weight: 475; margin-top: 4px; letter-spacing: -0.01em; }
+  .logo-cta {
+    margin-top: 14px; padding: 14px 24px;
+    background: var(--brand-primary); color: #fff;
+    border-radius: 999px; font-size: 16px; font-weight: 500;
+    box-shadow: 0 6px 18px rgba(11,73,75,0.28);
+    display:inline-flex; align-items:center; gap: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- ============== APP SHELL ============== -->
+  <div class="scene" id="sc-app">
+    <div class="appwin" id="appwin">
+      <div class="winbar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <div class="url"><span class="lock">🔒</span> app.atlas.trade / intelligence</div>
+      </div>
+
+      <div class="main">
+        <div class="main-head">
+          <img class="brand-img" src="atlas-wordmark.svg" alt="Atlas Trade">
+          <span class="slash">/</span>
+          <span class="title">Intelligence</span>
+          <span class="badge">Trade copilot</span>
+        </div>
+
+        <div class="chatpane">
+          <div class="userbubble" id="userbubble">
+            <div class="b" id="userq"></div>
+          </div>
+
+          <!-- AI thinking bubble -->
+          <div class="aibubble thinking" id="aiThinking">
+            <div class="ai-head">
+              <div class="sparkle">✦</div>
+              <div class="name">Atlas Trade Intelligence</div>
+              <div class="ts">just now</div>
+            </div>
+            <div class="intro-msg" id="introMsg"></div>
+            <div class="toolchain" id="toolchain"></div>
+          </div>
+
+          <!-- AI result bubble (GenUI host) -->
+          <div class="aibubble result" id="aiResult">
+            <div class="ai-head">
+              <div class="sparkle">✦</div>
+              <div class="name">Atlas Trade Intelligence</div>
+              <div class="ts">just now</div>
+            </div>
+            <div class="result-intro" id="resultIntro"></div>
+            <div id="genuiSlot"></div>
+          </div>
+
+          <div class="composer" id="composer">
+            <div class="composer-row1">
+              <div class="spark">✦</div>
+              <div class="q empty" id="composerQ">Ask anything...</div>
+            </div>
+            <div class="composer-row2">
+              <div class="plus">+</div>
+              <div class="send" id="sendBtn"><span>↑</span><span>Send</span></div>
+            </div>
+            <div class="disclaim">Atlas AI may display inaccurate info, so please double check the response. <u>Your Privacy &amp; Atlas Intelligence</u></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== COLD OPEN ============== -->
+  <div class="scene" id="sc-cold">
+    <div class="floaters" id="floaters"></div>
+    <div class="cold-stack">
+      <div class="cold-head" id="coldHead">Stop overpaying.<br><span class="accent">Start asking.</span></div>
+      <div class="cold-sub" id="coldSub">U.S. importers leave billions in duty on the table every year.</div>
+    </div>
+  </div>
+
+  <!-- ============== LOGO OUT ============== -->
+  <div class="scene" id="sc-logo">
+    <div class="logo-wrap">
+      <div class="logo-row" id="logoRow">
+        <img class="logo-full" src="atlas-wordmark.svg" alt="Atlas Trade">
+        <div class="logo-sub">Intelligence</div>
+      </div>
+      <div class="logo-sub" id="logoTag" style="margin-top: 4px;">Trade strategy, at the speed of a prompt.</div>
+      <div class="logo-cta" id="logoCta">atlas.trade <span>→</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   Atlas Trade Intelligence — promo (chat + GenUI)
+   ========================================================= */
+/* === MODE FLAG: window.__ZOOM_MODE__ may be set by the renderer before page load === */
+const ZOOM_MODE = window.__ZOOM_MODE__ === true;
+const DURATION = ZOOM_MODE ? 19.5 : 17.5;
+const POST_SEND_OFFSET = ZOOM_MODE ? 2.2 : 0;   /* zoom mode delays after-send events by this much */
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const easeInOutCubic = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
+const clamp = (v, a=0, b=1) => Math.max(a, Math.min(b, v));
+const range = (t, a, b) => clamp((t-a)/(b-a));
+const inRange = (t, a, b) => t >= a && t <= b;
+const fade = (t, fadeIn, hold, fadeOut) => {
+  if (t < fadeIn[0]) return 0;
+  if (t < fadeIn[1]) return easeOutCubic(range(t, fadeIn[0], fadeIn[1]));
+  if (t < fadeOut[0]) return 1;
+  if (t < fadeOut[1]) return 1 - easeOutCubic(range(t, fadeOut[0], fadeOut[1]));
+  return 0;
+};
+const lerp = (a,b,t) => a + (b-a)*t;
+const fmtMoney = n => '$' + Math.round(n).toLocaleString('en-US');
+
+/* (logo SVGs loaded via <img> tags in markup) */
+const _UNUSED_LEGACY_LOGO_PATHS = `
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10.0942 0.217263C10.7588 0.313421 10.7438 0.291385 11.3781 0.0646782C14.3812 0.0756964 14.3658 0.0756964 17.3796 0.0586683C17.8593 0.216929 17.8336 0.275358 18.3277 0.250317C26.3176 0.880688 32.2312 3.27062 36.3693 3.3965C36.4699 3.3995 36.4645 3.41419 37.0578 3.67596C37.2247 3.74974 39.7924 3.74774 40.0303 3.74774C40.6895 3.95575 40.6895 3.95742 41.3628 3.72604C41.8205 3.72938 45.0308 3.75375 46.9952 2.7127C48.5959 1.86431 48.7038 2.17816 50.3311 1.38352C52.2136 0.46467 53.071 0.731443 53.9978 0.365841C54.0498 0.345474 54.0178 0.234625 54.0697 0.214258C54.5664 0.279365 54.5504 0.230952 55.0185 0.0603378C58.0046 0.0746947 58.0039 -0.177387 60.9657 0.253656C63.0327 0.554485 63.0587 0.345474 65.0601 0.949134C65.9119 1.20622 67.7764 1.40021 68.0146 1.42492C68.0159 1.42492 71.004 2.26397 72.677 2.43324C73.5418 2.52072 73.4938 2.68866 74.3446 2.74709C74.668 2.76913 74.6101 2.98081 78.3397 3.4202C78.8124 3.56143 78.8001 3.60684 79.2928 3.5591C79.9787 3.6793 81.8482 4.0065 87.9933 3.72737C88.2361 3.71636 88.1668 3.58748 88.38 3.55376C90.7789 3.1768 90.7805 3.28364 94.9982 2.12607C96.5792 1.69202 98.0969 3.04058 98.1968 3.50601C98.2135 3.58314 98.0939 3.65425 98.1182 3.72938C98.1532 3.83655 98.3724 3.75409 98.3771 4.44489C98.3834 5.41649 98.3428 5.42484 97.7645 6.19944C97.3257 6.78708 97.3324 6.80411 96.6425 7.07388C96.4106 7.16437 93.4828 7.9136 91.9834 8.41242C91.9298 8.43045 88.9584 8.71592 88.2858 9.01374C87.7961 8.95364 87.8091 9.0084 87.3324 9.16566C85.0928 9.15464 85.1131 9.15798 81.0034 9.15264C80.9141 9.12392 80.9677 8.96299 79.982 8.89388C77.8524 8.70557 77.8407 8.93461 77.342 8.78002C74.5008 7.89958 73.6664 8.36768 73.0584 8.00642C72.2965 7.55334 72.1307 8.14598 71.3925 7.67621C70.9441 7.39074 66.0545 6.42315 66.0252 6.4148C64.8852 6.08759 64.8832 6.18442 63.7313 5.98576C61.2189 5.55271 61.2425 5.48226 58.6838 5.49862C57.7437 5.50463 55.5408 5.21416 54.0094 5.74937C53.5041 5.92599 52.5504 5.75171 51.2978 6.6819C51.1036 6.82614 49.4786 6.945 47.9633 8.01176C47.808 8.12127 46.1114 8.32327 43.3602 9.11658C43.2089 9.16032 37.9413 9.19404 37.6987 9.11958C36.2087 8.6625 36.1894 8.87418 34.6903 8.53061C33.8385 8.33529 33.8009 8.57335 33.0084 8.21676C32.8611 8.15066 32.8621 8.19239 31.027 7.84716C29.8184 7.62012 29.8337 7.66152 28.6518 7.28022C27.8703 7.02814 27.842 7.30526 27.0408 7.11195C26.5128 6.98474 26.5588 6.87789 26.0365 6.80077C24.7003 6.60277 24.7546 6.33166 22.3721 6.13868C21.8808 6.09895 21.7855 5.83518 20.7075 5.81782C19.839 5.80379 19.8837 5.65421 19.0355 5.52533C18.7191 5.47725 15.3645 5.48627 15.0454 5.48727C14.5314 5.37375 14.5754 5.26824 14.0464 5.26691C13.5167 5.26557 13.5607 5.37208 13.0477 5.4836C12.6419 5.48493 8.87064 5.49762 8.00286 6.00746C7.58512 6.25287 7.45354 5.79545 3.70058 7.06053C2.45769 7.47955 0.650503 6.69593 0.42831 6.09293C0.2864 5.70797 -0.873866 3.60584 1.35139 2.37749C2.90241 1.52108 2.9817 1.78251 4.68728 1.33777C4.93313 1.27367 7.56746 0.586537 7.76634 0.552815C8.95659 0.350482 9.24607 0.586871 10.0959 0.217597L10.0942 0.217263Z" fill="#2EC0AF" fill-opacity="0.97"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.3794 10.1059C13.3784 10.1106 15.3775 10.1153 17.3766 10.1199C17.8553 10.2558 17.8326 10.2922 18.3276 10.2428C20.1908 10.6658 20.2258 10.3042 21.0219 10.5179C21.8714 10.746 26.9282 11.5333 26.9852 11.5713C27.1048 11.6511 27.2587 11.7543 28.7107 12.0695C35.7083 13.589 35.7563 13.3225 36.3549 13.4918C37.9882 13.9536 37.9955 13.7616 39.6958 13.773C40.1978 13.8771 40.1588 13.977 40.6922 13.9796C41.2635 13.9823 41.2212 13.8087 41.3614 13.7636C43.4607 13.7673 43.4717 13.8157 43.6679 13.7165C43.7209 13.6898 44.107 13.4952 44.3568 13.4364C44.8519 13.3202 44.8569 13.5232 45.3322 13.3633C47.9526 12.4822 48.5112 12.0738 48.7514 11.8979C49.3047 11.4932 49.4 11.772 50.0429 11.5042C51.968 10.7022 51.9957 10.8712 54.0107 10.4144C55.6161 10.2645 55.5674 10.136 55.6854 10.1146C57.857 10.1083 57.8393 10.1146 60.0163 10.1093C60.4926 10.2502 60.479 10.2859 60.9653 10.2385C61.7838 10.5867 61.7942 10.4171 62.6813 10.4438C63.1556 10.5774 63.142 10.6144 63.6307 10.571C63.8722 10.6739 75.1364 13.0852 76.0062 13.1025C76.4749 13.2448 76.4622 13.2928 76.9562 13.2371C77.6125 13.5259 77.6175 13.4197 78.3384 13.4504C78.983 13.5963 78.964 13.6214 79.6229 13.5843C80.2145 13.6975 80.2085 13.787 84.0008 13.8027C84.8399 13.9492 84.8403 14.0234 85.6664 13.784C87.5922 13.7636 87.6108 13.9386 88.3827 13.5773C88.8727 13.6224 88.8601 13.591 89.3304 13.4514C90.5367 13.3977 90.4917 13.2077 90.9944 13.1008C92.3555 12.812 92.3565 12.9379 93.682 12.5182C96.8277 11.5222 96.794 12.4601 97.6432 12.8097C98.2751 13.0698 98.458 15.0958 98.2714 15.4444C98.1925 15.5919 98.2321 15.5793 98.1865 15.7325C98.1655 15.8033 97.8101 16.0333 97.6458 16.454C97.4097 17.0594 91.7589 18.6012 88.3547 18.9014C87.7921 18.9815 87.2291 19.062 86.6664 19.1421C83.9941 19.1495 84.0121 19.1485 81.3365 19.1625C80.8848 19.0784 80.4334 18.9942 79.9817 18.9097C76.0112 18.5365 76.0192 18.4911 75.6727 18.4787C75.3326 18.3932 74.9925 18.3078 74.652 18.2226C71.6729 17.5956 71.6179 17.8273 71.3958 17.6844C71.0293 17.449 67.4156 16.7332 67.0665 16.664C64.7483 16.205 63.4411 15.5652 59.0169 15.4834C57.8666 15.1763 57.8683 15.243 56.6844 15.4581C54.8492 15.5262 54.8465 15.4561 54.7073 15.5315C54.6054 15.5869 54.7296 15.648 54.6383 15.6971C54.147 15.6293 54.16 15.6547 53.6883 15.8203C50.6792 16.2818 48.7731 18.2784 44.055 18.9041C42.6476 18.9208 42.7136 19.1608 42.6929 19.1685C40.39 19.1248 38.5449 19.2099 38.0488 19.077C36.8779 18.7635 36.8866 18.8537 35.698 18.8246C35.2303 18.6854 35.2433 18.6383 34.7489 18.6917C34.4078 18.5365 31.0129 17.8607 30.6988 17.8286C30.2298 17.6717 30.2438 17.6387 29.7504 17.6931C29.5229 17.5816 29.1108 17.3839 24.3758 16.4457C21.1788 15.8123 21.1712 15.9519 20.0425 15.7796C19.7024 15.7068 19.3623 15.634 19.0222 15.5612C18.7047 15.5405 17.9779 15.4931 15.046 15.4287C13.7032 15.1415 13.7022 15.1272 12.3797 15.4788C12.0343 15.4861 8.86695 15.5549 8.08011 15.9095C7.73066 16.0671 6.83057 16.1515 6.7203 16.1619C5.84219 16.2444 2.53162 17.874 1.09286 16.7388C0.618493 16.3646 0.636482 16.3569 0.352661 15.8136C0.325345 15.7612 0.211417 15.7869 0.196427 15.7295C0.155119 15.5719 0.197759 15.5796 0.118143 15.4384C-0.0504174 15.1385 0.0142084 13.7169 0.444936 13.1653C0.656802 12.8938 1.41865 11.9182 4.36746 11.4084L5.01705 11.3089C5.40647 11.1874 7.34924 10.5804 10.0245 10.3547C10.4759 10.2712 10.9273 10.1877 11.3787 10.1042L11.3794 10.1059Z" fill="#2EAD9F" fill-opacity="0.98"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.7148 20.157C14.2343 20.145 14.2093 20.1444 16.71 20.1504C17.5445 20.326 17.5235 20.333 18.3943 20.3784C27.7704 21.1286 31.8171 23.2725 36.0301 23.5029C36.5022 23.6298 36.4905 23.6555 36.9795 23.5974C37.4226 23.793 37.835 23.9753 43.0271 23.8237C44.8412 23.7707 49.3657 22.0545 50.4197 21.2488C50.8168 20.9453 51.3355 21.3917 52.7432 20.5864C53.2323 20.6388 53.2183 20.6165 53.6863 20.4669C53.9015 20.4432 54.117 20.4198 54.3322 20.3961C55.0055 20.3106 55.6784 20.2252 56.3516 20.1397C57.351 20.138 58.3504 20.1367 59.3497 20.135C59.9117 20.2148 60.474 20.2946 61.036 20.3744C61.3531 20.4061 64.6647 20.7367 64.9865 20.8846C65.267 21.0135 69.8244 21.922 70.6756 22.1473C71.1546 22.2866 71.1359 22.3096 71.619 22.2936C71.8598 22.3563 72.1003 22.4191 72.3412 22.4819C72.8182 22.6204 72.8042 22.6455 73.2906 22.588C73.6434 22.7633 73.6254 22.756 74.0071 22.8091C74.3473 22.8942 74.687 22.9794 75.0272 23.0645C78.2025 23.3864 78.1439 23.747 81.3355 23.8288C88.8917 24.0231 89.7362 23.5874 90.3811 23.2551C90.8805 23.3179 90.8658 23.2829 91.3292 23.1423C93.0668 22.9263 94.761 22.1747 94.9932 22.1386C95.7687 22.0191 96.9177 22.2659 97.2721 22.5557C97.7838 22.974 97.8161 22.8889 97.8464 22.935C98.0076 23.1784 97.9547 23.5139 98.0679 23.783C98.0909 23.8374 98.2205 23.792 98.2315 23.8501C98.2491 23.9426 98.1172 24.0204 98.1306 24.1136C98.1502 24.2501 98.2958 24.3453 98.3224 24.4808C98.3654 24.6992 98.2911 24.9302 98.3341 25.1486C98.1052 25.6301 98.0666 25.5923 97.9757 26.1342C97.0063 26.9936 96.9666 26.9182 95.7097 27.3075C94.9602 27.5395 94.7763 27.8033 94.6497 27.7906C94.5465 27.7803 94.4769 27.6404 94.3736 27.6474C93.746 27.6898 93.3479 28.4751 87.355 28.9552C87.0142 29.0193 86.6735 29.0834 86.3323 29.1475C84.9999 29.1435 83.6674 29.1395 82.3349 29.1358C81.6646 29.0333 81.6819 29.0226 81.0104 29.0981C79.5383 28.6931 79.5263 28.8564 78.0053 28.8036C77.5382 28.6744 77.5486 28.6484 77.0585 28.7001C76.4786 28.4317 76.4772 28.5315 75.6738 28.4634C75.3333 28.3876 74.9925 28.3121 74.6521 28.2363C73.1217 27.9001 73.132 27.8991 72.9991 27.8731C72.6557 27.806 72.668 27.8768 72.3415 27.813C72.0017 27.7248 71.6623 27.637 71.3225 27.5489C70.3185 27.3262 70.3488 27.2654 69.3471 27.1258C67.7311 26.9008 65.0341 25.9693 62.6803 25.8124C62.2096 25.6781 62.2222 25.6381 61.7279 25.7099C61.3784 25.6087 61.4048 25.4845 58.6842 25.4431C58.0232 25.2735 58.0242 25.2698 57.353 25.4144C56.9249 25.3489 56.9493 25.3943 56.3496 25.4541C54.3872 25.6508 54.3029 25.3546 49.9946 27.0788C47.7994 27.9572 47.8517 28.0143 47.6598 28.0814C46.9616 28.3262 44.8213 28.5956 43.9755 29.055C43.158 28.8844 43.169 28.9689 42.3601 29.1368C40.6152 29.1519 40.6282 29.1382 39.363 29.1382C38.7128 29.0337 38.7301 29.013 38.0549 29.0727C36.8776 28.8871 36.8943 28.8564 35.6977 28.808C35.228 28.6754 35.2426 28.649 34.7513 28.7044C34.4012 28.5315 34.4122 28.5355 34.0321 28.4841C33.5564 28.3388 33.5784 28.3181 33.086 28.3696C32.8825 28.2671 32.9268 28.1993 32.6962 28.1729C30.6282 27.9369 27.0195 26.8501 26.3692 26.83C25.6707 26.8083 25.717 26.6374 25.0284 26.5392C20.3757 25.8771 20.4223 25.4955 15.711 25.4554C15.215 25.3412 15.2276 25.3322 14.7146 25.4197L14.3758 25.4117C12.9357 25.0448 12.9381 25.3145 12.0453 25.4634C3.97141 25.7639 3.63795 28.2363 1.10955 26.7319C0.0182393 26.0825 -0.00374681 24.1219 0.137164 23.8421C0.206454 23.7046 0.160483 23.7122 0.207453 23.547C0.223443 23.4905 0.347698 23.5226 0.364021 23.4662C0.494272 23.2592 0.62419 23.0518 0.754441 22.8448C1.74881 21.9964 1.86341 22.2438 3.37145 21.768C3.70824 21.6659 4.04536 21.5637 4.38215 21.4615C5.85189 21.0378 7.09743 20.939 7.77067 20.5904C8.24904 20.6525 8.23571 20.6305 8.71508 20.4839C9.38299 20.4585 9.36533 20.4736 10.0292 20.3971C10.889 20.3514 10.8764 20.3684 11.7142 20.1557L11.7148 20.157Z" fill="#2B9A90" fill-opacity="0.98"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M17.3757 30.2002C17.852 30.3144 17.8267 30.3405 18.3201 30.3174C18.5216 30.3588 23.7123 30.9408 26.0359 31.505C26.5122 31.6473 26.4919 31.6603 26.9789 31.6115C27.9067 32.1164 35.0802 33.4739 35.6971 33.5173C36.1478 33.5978 36.5982 33.6783 37.0489 33.7587C37.8834 33.8743 37.8621 33.8516 38.6965 33.8673C40.7752 34.2843 41.3405 33.9918 42.0288 33.8709C42.4122 33.8646 44.9253 33.8232 46.7265 32.907C46.943 32.7968 46.898 32.7614 47.0946 32.6015C47.1509 32.5554 47.9917 32.6058 50.0537 31.5615C50.2736 31.4503 50.2309 31.4186 50.4235 31.2673C50.4891 31.2156 51.7733 31.0469 51.9768 30.9942C54.7247 30.282 55.0549 30.1979 59.3491 30.1925C59.8505 30.3011 59.8338 30.3064 60.3409 30.2189C60.3902 30.2323 60.3895 30.2299 62.3463 30.5251C62.799 30.5959 63.2514 30.6667 63.7041 30.7374C64.4076 30.8937 67.1272 31.3605 67.6776 31.4967C68.0157 31.5912 68.3541 31.6857 68.6922 31.7805C68.8525 31.8015 69.6746 31.9097 70.6747 32.1775C71.0141 32.2633 71.3532 32.3491 71.6927 32.4349C73.8726 32.6686 73.8067 32.9918 76.004 33.1968C76.6799 33.3567 76.6592 33.3758 77.3474 33.4639C77.5663 33.481 77.7848 33.4976 78.0037 33.5147C78.6753 33.684 78.6519 33.724 79.3478 33.7781C81.681 33.9003 81.6667 33.8723 84.0002 33.9013C93.4396 34.0195 94.7358 31.3184 96.7222 32.3528C97.9794 33.0075 98.014 33.076 98.1433 34.1284C98.2992 35.3981 98.4681 35.507 97.6246 36.4679C97.2575 36.5961 97.2805 36.6081 97.0024 36.8522C96.8401 36.9093 96.8901 37.0218 96.016 37.2431C94.0166 37.7493 92.0865 38.558 87.6829 38.9359C87.2365 38.9553 86.7901 38.9747 86.3441 38.9944C84.1881 39.2919 84.1921 39.1316 82.0028 39.1276C81.1657 38.9727 81.1847 38.9633 80.3182 38.9172C79.6586 38.8785 78.9994 38.8394 78.3398 38.8007C77.8884 38.7279 77.4367 38.6551 76.9853 38.582C76.6595 38.5463 76.3337 38.5102 76.008 38.4745C75.331 38.2638 75.3504 38.2865 74.6591 38.2238C74.1205 38.1516 72.315 37.9092 68.0127 36.8218C67.6732 36.7336 67.3338 36.6455 66.9943 36.5577C65.8361 36.352 65.8754 36.2365 64.6808 36.1487C64.2001 36.0104 64.2131 35.9884 63.7334 36.0575C63.3963 35.8732 63.4053 35.8806 63.0148 35.8261C62.6724 35.7557 62.3296 35.6856 61.9871 35.6151C60.3312 35.4262 60.3479 35.4639 58.6846 35.4499C58.1729 35.339 58.1876 35.3417 57.6862 35.4398C55.5872 35.4706 54.8657 35.2706 52.3452 36.1357C52.1297 36.2094 50.3232 36.8295 49.6933 37.1744C49.4704 37.2849 49.2475 37.3951 49.0243 37.5056C48.9417 37.5226 48.4071 37.6328 48.0243 37.8358C47.8028 37.9493 47.5813 38.0628 47.3597 38.1763C43.7334 39.1292 39.7009 39.1316 39.03 39.1323C38.3951 39.0251 38.4187 39.0007 37.7525 39.0211C36.352 38.8588 32.6923 38.1817 32.3682 38.1456C31.8892 38.0097 31.9092 37.9927 31.4225 38.0565C30.4751 37.537 30.4178 37.7804 29.3711 37.4815C28.8937 37.3406 28.9137 37.328 28.427 37.385C27.5463 36.8889 21.1733 35.8599 20.3761 35.7938C20.0353 35.7256 19.6949 35.6575 19.3541 35.5894C17.4673 35.4338 11.0417 35.1861 9.99302 35.7123C9.50666 35.6525 9.52698 35.6649 9.04695 35.8024C7.76176 35.9066 7.81739 36.1534 7.70779 36.139C7.59453 36.124 7.52125 35.9727 7.40665 35.9737C6.95927 35.9777 4.62941 36.7737 4.39156 36.8552L3.74463 36.96C3.50778 37.0051 1.6906 37.351 0.776176 36.4412C0.218195 35.8859 -0.118592 34.4956 0.153903 33.8656C0.967388 31.9835 1.41311 32.3978 3.38386 31.8226C3.71698 31.7097 4.04977 31.5969 4.3829 31.484C4.82662 31.3631 7.20245 30.7157 10.0323 30.4202C10.587 30.3885 11.1416 30.3568 11.6966 30.3251C12.6147 30.1348 12.5964 30.1712 17.3757 30.2002Z" fill="#278983" fill-opacity="0.98"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M97.6751 46.196C97.4219 46.4521 97.4229 46.4214 97.25 46.7392C97.1088 46.8103 91.4284 49.2019 84.0011 49.1318C69.8513 48.9986 61.1891 42.9153 51.7381 46.3179C48.7407 47.397 48.8839 47.7943 45.0563 48.6634C37.5514 50.3672 27.9515 46.7279 21.0435 45.8231C4.70951 43.6835 2.56253 49.7605 0.442871 45.8284C0.306957 45.576 0.115744 44.0144 0.176706 43.8869C1.00318 42.163 2.84169 42.0084 5.01498 41.3864C17.154 37.9107 30.9496 43.2448 36.3525 43.6137C36.4241 43.6188 42.4103 45.0421 48.3119 42.4008C55.4454 39.2078 59.9739 39.6836 71.366 42.4141C71.6302 42.4775 71.6399 42.4018 74.6926 43.0922C75.034 43.1694 75.0407 43.0865 79.0159 43.7707C79.9409 43.9299 87.199 44.1102 88.9646 43.7036C90.8397 43.2719 90.8661 43.4508 93.2962 42.7353C94.2689 42.4488 97.5318 41.1363 98.276 44.5156C98.3067 44.6551 98.4406 45.2635 97.6747 46.1963L97.6751 46.196Z" fill="#247574" fill-opacity="0.98"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M37.6888 58.917C27.6508 58.0933 18.326 52.8587 4.75728 56.6913C3.54205 57.0345 0.328744 58.2305 0.171843 54.2116C0.11388 52.7234 2.74122 52.1038 3.02004 52.038C3.41113 51.9458 10.3234 49.039 21.7082 50.851C32.9728 52.644 40.3494 55.8272 47.329 52.7936C48.8091 52.1502 54.6071 48.3603 67.9736 51.647C89.3798 56.9103 92.4415 51.9158 96.3124 52.2934C98.1806 52.4757 99.565 56.3514 95.9983 57.2192C91.9239 58.2105 90.9771 59.2468 81.665 58.9894C71.168 58.6993 58.9594 52.9862 51.6463 56.4182C51.072 56.6876 47.6678 57.9884 47.3204 58.121C44.8233 59.0749 39.3867 58.9921 38.6932 58.9814C38.3584 58.9597 38.0239 58.9383 37.6891 58.9166L37.6888 58.917Z" fill="#206164" fill-opacity="0.98"/>
+`;
+/* (no JS logo injection needed) */
+
+/* === timeline === */
+const SCENES = ZOOM_MODE ? {
+  COLD:    { in: 0.0,  out: 2.0  },
+  BIGGEST: { in: 2.0,  out: 15.5 },   /* 13.5s — zoom mode: type → pan to Send → zoom-out → tools → result */
+  LOGO:    { in: 15.5, out: 19.5 },   /* 4s logo hold */
+} : {
+  COLD:    { in: 0.0,  out: 2.0  },
+  BIGGEST: { in: 2.0,  out: 13.5 },   /* 11.5s — static view: type → send → tools → result */
+  LOGO:    { in: 13.5, out: 17.5 },   /* 4s logo hold */
+};
+
+const CASES = {
+  BIGGEST: {
+    query: "show me my biggest tariff engineering opportunity",
+    intro: "Scanning your 847 entries from 2024. Pulling HTS classifications, CBP rulings, court precedents, and known tariff-engineering patterns...",
+    tools: [
+      { name: 'reading entries · 847 lines',            runFor: 0.7 },
+      { name: 'hts_lookup · 4-digit chapter scan',      runFor: 0.7 },
+      { name: 'hts_lookup · drill 10-digit',            runFor: 0.7 },
+      { name: 'cbp_rulings · NY + HQ cross-reference',  runFor: 0.65 },
+      { name: 'court_decisions · CIT precedents',       runFor: 0.6 },
+      { name: 'tariff_engineering_patterns · footwear', runFor: 0.55 },
+      { name: 'duty_calculator · stack rules',          runFor: 0.5 },
+      { name: 'ranking_by_savings',                     runFor: 0.5 },
+    ],
+    toolStart: 3.1 + POST_SEND_OFFSET,
+    toolGap:   0.30,
+    resultIntroT: 5.9 + POST_SEND_OFFSET,
+    cardStart:   6.3 + POST_SEND_OFFSET,
+    resultIntro: 'Your single biggest unrealized opportunity — and it\'s a classic:',
+    hero: {
+      kind: 'opportunity',
+      rank: '#1',
+      cat:  'Tariff engineering · footwear reclassification',
+      title: 'Canvas sneakers · felt-sole reclass',
+      sub:   'HTS 6404.19.20  ·  the Converse Chuck Taylor strategy',
+      num:   3840000,
+      unit:  '/ year saved at current volume',
+      cap:   'Adding a felt layer over >50% of the rubber outer sole moves classification from athletic footwear (20%) into the textile-soled basket (7.5%). In commercial use by Converse on All-Stars since the 1990s.',
+      actions: [
+        { label: 'Show the modification spec', primary: true },
+        { label: 'Apply to my 4 SKUs',         primary: false },
+      ],
+      others: [
+        { rank: '#2', label: "Cotton tees · First Sale + USMCA stack", amt: 1457000 },
+        { rank: '#3', label: 'Speakers · §301 origin shift to VN',     amt: 612300 },
+        { rank: '#4', label: 'Cargo vans · reclass to 8704.31',        amt: 214000 },
+      ],
+    },
+  },
+};
+
+/* === cold open floaters === */
+const FLOATERS = [
+  '8703.23', '+25%', '§301 +7.5%', 'HTS 9503', 'MFN 16.5%',
+  'CIT 2003', 'USMCA', '6402.99', 'HQ H024707', '8704.31',
+  '2.5%', '$1.2T', '8518.22', 'first sale', 'Ch.99', 'MPF 0.3464%',
+  '6109.10', 'origin VN', 'reclass', 'yarn-forward', '9018.32'
+];
+function buildFloaters() {
+  const root = document.getElementById('floaters');
+  FLOATERS.forEach((txt, i) => {
+    const d = document.createElement('div');
+    d.className = 'floater';
+    d.textContent = txt;
+    const a = (i*0.6180339887 + 0.13) % 1;
+    const b = (i*0.3819660113 + 0.27) % 1;
+    d.dataset.x0 = (a * 1920).toFixed(1);
+    d.dataset.y0 = (b * 1080).toFixed(1);
+    d.dataset.driftX = (((i*7) % 11) - 5).toFixed(2);
+    d.dataset.driftY = (((i*13) % 7) - 3).toFixed(2);
+    root.appendChild(d);
+  });
+}
+buildFloaters();
+const floatNodes = Array.from(document.querySelectorAll('.floater'));
+
+function typedText(full, t, startT, endT) {
+  if (t < startT) return '';
+  if (t >= endT) return full;
+  const p = range(t, startT, endT);
+  const n = Math.floor(easeOutCubic(p) * full.length);
+  return full.slice(0, n);
+}
+
+/* === GenUI card builders === */
+function buildOpportunityCard(hero) {
+  const others = hero.others.map((o, i) =>
+    `<div class="opp-chip" data-i="${i}"><span class="rk">${o.rank}</span><span>${o.label}</span><span class="amt">${fmtMoney(o.amt)}</span></div>`
+  ).join('');
+  return `
+    <div class="genui-hero" id="genuiCard">
+      <div class="gh-top">
+        <span class="gh-rank">${hero.rank}</span>
+        <span class="gh-cat">${hero.cat}</span>
+      </div>
+      <div class="gh-title">${hero.title}</div>
+      <div class="gh-sub">${hero.sub}</div>
+      <div class="gh-bigrow">
+        <div class="gh-num" id="ghNum">$0</div>
+        <div class="gh-unit">${hero.unit}</div>
+      </div>
+      <div class="gh-cap">${hero.cap}</div>
+      <div class="gh-actions" id="ghActions">
+        ${hero.actions.map((a,i) => `<div class="gh-btn ${a.primary?'primary':''}" data-i="${i}">${a.primary?'<span class="ic">✦</span>':'<span class="ic">↗</span>'}<span>${a.label}</span></div>`).join('')}
+      </div>
+      <div class="gh-others" id="ghOthers">
+        <div class="lbl-row">Other opportunities · ${hero.others.length} more found</div>
+        ${others}
+      </div>
+    </div>`;
+}
+
+function buildRulingCard(hero) {
+  return `
+    <div class="genui-ruling" id="genuiCard">
+      <div class="gr-top">
+        <div class="gr-icon">${hero.icon}</div>
+        <span class="gr-badge">${hero.badge}</span>
+      </div>
+      <div class="gr-case">${hero.caseName}</div>
+      <div class="gr-court">${hero.court}</div>
+      <div class="gr-quote">${hero.quote}</div>
+      <div class="gr-detail">${hero.detail}</div>
+      <div class="gr-transition">
+        <div class="gr-side">
+          <div class="lbl">BEFORE</div>
+          <div class="hcode">${hero.fromHts}</div>
+          <div class="duty">${hero.fromDuty}</div>
+          <div class="name">${hero.fromName}</div>
+        </div>
+        <div class="gr-arrow">→</div>
+        <div class="gr-side to">
+          <div class="lbl">AFTER</div>
+          <div class="hcode">${hero.toHts}</div>
+          <div class="duty" id="grDuty">${hero.toDuty}</div>
+          <div class="name">${hero.toName}</div>
+        </div>
+      </div>
+      <div class="gr-impact">Industry impact: <span class="amt" id="grImpact">$0</span><span>${hero.impactLabel}</span></div>
+      <div class="gh-actions" id="ghActions">
+        ${hero.actions.map((a,i) => `<div class="gh-btn ${a.primary?'primary':''}" data-i="${i}">${a.primary?'<span class="ic">✦</span>':'<span class="ic">↗</span>'}<span>${a.label}</span></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ===== render one case ===== */
+let __lastCase = null;
+function renderCase(t, scene, caseData) {
+  const localT = t - scene.in;
+  const total  = scene.out - scene.in;
+
+  /* === phase boundaries (localT seconds) ===
+     STATIC: typing → send pulse → clear → user bubble → thinking → tools → result
+     ZOOM:   typing (camera held on text) → pan to Send → hold/pulse → zoom out → user bubble → ... */
+  const T_TYPE_START    = 0.4;
+  const T_TYPE_END      = 2.4;     /* typing ends */
+  const T_PAN_END       = ZOOM_MODE ? 3.4 : 2.4;   /* pan to Send button (zoom only) */
+  const T_HOLD_END      = ZOOM_MODE ? 3.8 : 2.8;   /* hold + send pulse */
+  const T_ZOOM_OUT_END  = ZOOM_MODE ? 5.0 : 2.8;   /* return to scale 1.0 (zoom only) */
+  const POST_SEND_T     = ZOOM_MODE ? T_ZOOM_OUT_END : T_HOLD_END;  /* when chat content reveals */
+
+  /* composer typing */
+  const composer = document.getElementById('composer');
+  composer.classList.toggle('focused', localT > 0.15 && localT < T_HOLD_END);
+  const composerQ = document.getElementById('composerQ');
+  let typedQuery, typeProgress = 0;  /* linear 0..1 so camera pans at constant rate */
+  if (localT < T_TYPE_START) {
+    typedQuery = ''; typeProgress = 0;
+  } else if (localT < T_TYPE_END) {
+    typeProgress = (localT - T_TYPE_START) / (T_TYPE_END - T_TYPE_START);
+    const n = Math.floor(typeProgress * caseData.query.length);
+    typedQuery = caseData.query.slice(0, n);
+  } else if (localT < T_HOLD_END) {
+    typedQuery = caseData.query; typeProgress = 1;        /* hold full text */
+  } else {
+    typedQuery = ''; typeProgress = 0;                    /* sent — bar clears */
+  }
+  const showCaret = localT > 0.25 && localT < T_TYPE_END + 0.1 && (Math.floor(localT*2.4) % 2 === 0);
+  if (typedQuery === '') {
+    composerQ.classList.add('empty');
+    composerQ.innerHTML = 'Ask anything...' + (localT < T_TYPE_START && localT > 0.25 ? '<span class="caret"></span>' : '');
+  } else {
+    composerQ.classList.remove('empty');
+    composerQ.innerHTML = typedQuery + (showCaret ? '<span class="caret"></span>' : '');
+  }
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.classList.toggle('disabled', typedQuery.length === 0);
+  /* in static mode pulse during typing end; in zoom mode pulse during hold-on-send */
+  sendBtn.classList.toggle('pulse', ZOOM_MODE ? (localT > T_PAN_END && localT < T_HOLD_END) : (localT > T_TYPE_END && localT < T_HOLD_END));
+
+  /* user bubble pops AFTER send (chat reveal) */
+  const userP = easeOutCubic(range(localT, POST_SEND_T, POST_SEND_T + 0.3));
+  const userbubble = document.getElementById('userbubble');
+  userbubble.style.opacity = userP;
+  userbubble.style.transform = `translateY(${(1-userP)*6}px)`;
+  document.getElementById('userq').textContent = caseData.query;
+
+  /* AI thinking bubble — appears just after the chat reveals, slides UP and out as result takes its place */
+  const ai1 = document.getElementById('aiThinking');
+  const thinkAppearP = easeOutCubic(range(localT, POST_SEND_T + 0.4, POST_SEND_T + 0.7));
+  const thinkExitP   = easeInOutCubic(range(localT, caseData.resultIntroT - 0.35, caseData.resultIntroT + 0.15));
+  const thinkOpacity = thinkAppearP * (1 - thinkExitP);
+  const thinkY = (1 - thinkAppearP)*8 + thinkExitP * (-360);
+  ai1.style.opacity = thinkOpacity;
+  ai1.style.transform = `translateY(${thinkY}px)`;
+  ai1.style.pointerEvents = thinkOpacity < 0.05 ? 'none' : 'auto';
+  document.getElementById('introMsg').innerHTML = caseData.intro;
+
+  /* tool chain — sequential pulse → done */
+  const toolchain = document.getElementById('toolchain');
+  if (__lastCase !== caseData) {
+    toolchain.innerHTML = '';
+    caseData.tools.forEach((tool, i) => {
+      const row = document.createElement('div');
+      row.className = 'tool-row';
+      row.dataset.idx = i;
+      row.innerHTML = `<div class="dot"></div><div class="tn">${tool.name}</div>`;
+      toolchain.appendChild(row);
+    });
+    __lastCase = caseData;
+  }
+  Array.from(toolchain.children).forEach((row, i) => {
+    const start = caseData.toolStart + i * caseData.toolGap;
+    const runEnd = start + caseData.tools[i].runFor;
+    const appearP = easeOutCubic(range(localT, start, start + 0.18));
+    row.style.opacity = appearP;
+    row.style.transform = `translateX(${(1-appearP)*-4}px)`;
+    if (localT >= start && localT < runEnd) {
+      row.classList.add('running'); row.classList.remove('done');
+    } else if (localT >= runEnd) {
+      row.classList.remove('running'); row.classList.add('done');
+    } else {
+      row.classList.remove('running','done');
+    }
+  });
+
+  /* AI result bubble — slides in from below as thinking exits */
+  const ai2 = document.getElementById('aiResult');
+  const ai2P = easeOutCubic(range(localT, caseData.resultIntroT, caseData.resultIntroT + 0.5));
+  ai2.style.opacity = ai2P;
+  ai2.style.transform = `translateY(${(1-ai2P)*16}px)`;
+  document.getElementById('resultIntro').innerHTML = caseData.resultIntro;
+
+  /* GenUI hero card slot */
+  const slot = document.getElementById('genuiSlot');
+  if (slot.dataset.case !== caseData.query) {
+    slot.dataset.case = caseData.query;
+    if (caseData.hero.kind === 'opportunity') slot.innerHTML = buildOpportunityCard(caseData.hero);
+    else                                       slot.innerHTML = buildRulingCard(caseData.hero);
+  }
+  const card = document.getElementById('genuiCard');
+  const cardP = easeOutCubic(range(localT, caseData.cardStart, caseData.cardStart + 0.6));
+  card.style.opacity = cardP;
+  card.style.transform = `translateY(${(1-cardP)*8}px)`;
+
+  /* Animate big number / impact */
+  if (caseData.hero.kind === 'opportunity') {
+    const tickP = easeOutCubic(range(localT, caseData.cardStart + 0.4, caseData.cardStart + 2.0));
+    document.getElementById('ghNum').textContent = fmtMoney(caseData.hero.num * tickP);
+
+    /* Stagger action buttons */
+    const acts = card.querySelectorAll('#ghActions .gh-btn');
+    acts.forEach((b, i) => {
+      const start = caseData.cardStart + 1.7 + i * 0.12;
+      const p = easeOutCubic(range(localT, start, start + 0.3));
+      b.style.opacity = p;
+      b.style.transform = `translateY(${(1-p)*4}px)`;
+    });
+
+    /* Stagger "other opportunities" chips */
+    const chips = card.querySelectorAll('#ghOthers .opp-chip');
+    chips.forEach((c, i) => {
+      const start = caseData.cardStart + 2.2 + i * 0.14;
+      const p = easeOutCubic(range(localT, start, start + 0.35));
+      c.style.opacity = p;
+      c.style.transform = `translateY(${(1-p)*4}px)`;
+    });
+  } else {
+    /* ruling — impact counter */
+    const tickP = easeOutCubic(range(localT, caseData.cardStart + 0.8, caseData.cardStart + 2.2));
+    document.getElementById('grImpact').textContent = fmtMoney(caseData.hero.impact * tickP);
+
+    const acts = card.querySelectorAll('#ghActions .gh-btn');
+    acts.forEach((b, i) => {
+      const start = caseData.cardStart + 1.9 + i * 0.12;
+      const p = easeOutCubic(range(localT, start, start + 0.3));
+      b.style.opacity = p;
+      b.style.transform = `translateY(${(1-p)*4}px)`;
+    });
+  }
+
+  /* ===== camera ===== */
+  const appwin = document.getElementById('appwin');
+  if (!ZOOM_MODE) {
+    appwin.style.transform = 'scale(1)';
+  } else {
+    /* ZOOM MODE — three phases of camera:
+       1) typing (T_TYPE_START..T_TYPE_END): zoom held on text center (NO pan)
+       2) pan to Send (T_TYPE_END..T_PAN_END): horizontal slide right at same zoom
+       3) hold + pulse (T_PAN_END..T_HOLD_END): still on Send
+       4) pan + zoom out (T_HOLD_END..T_ZOOM_OUT_END): camera returns to scale 1.0
+       After T_ZOOM_OUT_END: scale 1.0, static view. */
+    const APPW_CX = 750, APPW_CY = 440;
+    const TEXT_CENTER_X = 492;       /* center of the eventual full-text span in appwin */
+    const TARGET_Y      = 700;       /* slightly above composer mid for a nicer vertical frame */
+    const SEND_BTN_X    = 1320;      /* center of Send button in appwin coords */
+    const ZOOM_SCALE    = 2.5;       /* text fits edge-to-edge with comfortable margin */
+
+    let camX, camY, camS;
+    if (localT < T_TYPE_END) {
+      /* typing: camera STATIC at text center */
+      camX = TEXT_CENTER_X; camY = TARGET_Y; camS = ZOOM_SCALE;
+    } else if (localT < T_PAN_END) {
+      /* pan to Send button (same zoom) */
+      const p = easeInOutCubic(range(localT, T_TYPE_END, T_PAN_END));
+      camX = lerp(TEXT_CENTER_X, SEND_BTN_X, p);
+      camY = TARGET_Y; camS = ZOOM_SCALE;
+    } else if (localT < T_HOLD_END) {
+      /* hold + pulse on Send */
+      camX = SEND_BTN_X; camY = TARGET_Y; camS = ZOOM_SCALE;
+    } else if (localT < T_ZOOM_OUT_END) {
+      /* pan + zoom out to full view */
+      const p = easeInOutCubic(range(localT, T_HOLD_END, T_ZOOM_OUT_END));
+      camX = lerp(SEND_BTN_X, APPW_CX, p);
+      camY = lerp(TARGET_Y, APPW_CY, p);
+      camS = lerp(ZOOM_SCALE, 1.0, p);
+    } else {
+      camX = APPW_CX; camY = APPW_CY; camS = 1.0;
+    }
+    const txCss = -(camX - APPW_CX) * camS;
+    const tyCss = -(camY - APPW_CY) * camS;
+    appwin.style.transform = `translate(${txCss}px, ${tyCss}px) scale(${camS})`;
+  }
+}
+
+/* ===== top-level timeline ===== */
+function timeline(t) {
+  t = Math.max(0, Math.min(DURATION, t));
+
+  /* COLD OPEN */
+  const coldOpacity = fade(t, [0.0, 0.5], [0.5, 2.0], [2.0, 2.5]);
+  document.getElementById('sc-cold').style.opacity = coldOpacity;
+  floatNodes.forEach((d) => {
+    const x0 = +d.dataset.x0, y0 = +d.dataset.y0;
+    const dx = +d.dataset.driftX, dy = +d.dataset.driftY;
+    const x = x0 + dx * t * 9;
+    const y = y0 + dy * t * 9;
+    const blur = clamp(range(t, 1.5, 2.4)) * 4;
+    d.style.left = (x % 1920) + 'px';
+    d.style.top  = (y % 1080) + 'px';
+    d.style.opacity = coldOpacity * 0.7;
+    d.style.filter = `blur(${blur}px)`;
+  });
+  const coldHead = document.getElementById('coldHead');
+  const hAppear = easeOutCubic(range(t, 0.2, 1.0));
+  coldHead.style.transform = `scale(${0.95 + hAppear*0.05}) translateY(${(1-hAppear)*12}px)`;
+  document.getElementById('coldSub').style.opacity = easeOutCubic(range(t, 0.9, 1.6));
+
+  /* APP CASES */
+  let active = null;
+  if (inRange(t, SCENES.BIGGEST.in, SCENES.BIGGEST.out)) active = { s: SCENES.BIGGEST, c: CASES.BIGGEST };
+
+  if (active) {
+    const sceneO = fade(t,
+      [active.s.in,            active.s.in + 0.2],
+      [active.s.in + 0.2,      active.s.out - 0.25],
+      [active.s.out - 0.25,    active.s.out]);
+    document.getElementById('sc-app').style.opacity = sceneO;
+    if (sceneO > 0) renderCase(t, active.s, active.c);
+  } else {
+    document.getElementById('sc-app').style.opacity = 0;
+    document.getElementById('appwin').style.transform = 'scale(1)';
+  }
+
+  /* LOGO OUT */
+  const logo = document.getElementById('sc-logo');
+  const logoO = fade(t,
+    [SCENES.LOGO.in,         SCENES.LOGO.in + 0.4],
+    [SCENES.LOGO.in + 0.4,   DURATION - 0.2],
+    [DURATION - 0.2,         DURATION]);
+  logo.style.opacity = logoO;
+  if (logoO > 0) {
+    const lt = t - SCENES.LOGO.in;
+    const lp = easeOutCubic(range(lt, 0.05, 0.95));
+    document.getElementById('logoRow').style.transform = `scale(${0.9 + lp*0.10})`;
+    document.getElementById('logoRow').style.opacity = lp;
+    document.getElementById('logoTag').style.opacity = easeOutCubic(range(lt, 0.85, 1.4));
+    document.getElementById('logoCta').style.opacity = easeOutCubic(range(lt, 1.4, 1.9));
+  }
+}
+
+window.__TIME__ = 0;
+window.__setTime = function(t) { window.__TIME__ = t; timeline(t); };
+
+let _startWall = null;
+function loop(now) {
+  if (window.__RENDER_MODE__) { requestAnimationFrame(loop); return; }
+  if (_startWall === null) _startWall = now;
+  const elapsed = (now - _startWall) / 1000;
+  let t = elapsed % (DURATION + 1.0);
+  if (t > DURATION) t = DURATION;
+  window.__TIME__ = t;
+  timeline(t);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+function fit() {
+  const stage = document.getElementById('stage');
+  const sx = window.innerWidth / 1920;
+  const sy = window.innerHeight / 1080;
+  const s = Math.min(sx, sy);
+  stage.style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', fit);
+fit();
+timeline(0);
+</script>
+</body>
+</html>
