@@ -1,22 +1,32 @@
 ---
 name: promo-animation
-description: Build a polished 17–20s MP4 product promo (Linear/Vercel/Stripe quality) from the current codebase. Use when the user asks for a promo video, demo animation, product trailer, marketing clip, hero video, sizzle reel, or anything like "make me a video for our product." Extracts brand tokens + logo + chat UI from the repo, writes a 3-act script, researches a named domain case, then renders via Playwright + ffmpeg.
+description: Build a polished MP4 product animation (Linear/Vercel/Stripe quality) from the current codebase. Use when the user asks for a promo video, demo animation, product trailer, brand intro, stat reveal, logo animation, marketing clip, hero video, sizzle reel, walkthrough, or anything like "make me a video for our product." Extracts brand tokens + logo + fonts from the repo, picks the right animation pattern, then renders deterministically via Playwright + ffmpeg.
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash, Agent
 ---
 
-# Promo Animation
+# Product Animation
 
-You're producing a finished MP4 promo video for the current codebase's product. Treat it like a real ad: every detail visible on screen should be pulled from the actual product (real brand colors, real logo SVG, real chat-UI patterns, real domain vocabulary). Generic "AI helps you save money" copy is a failure mode — be **specific and named** (real court cases, HTS codes, dollar amounts, product names).
+You're producing a finished MP4 animation for the current codebase's product. The skill is a **deterministic animation engine + methodology**, not a fixed format — you decide the pattern that fits what the user asked for (a chat-style demo, a brand intro, a stat reveal, a workflow walkthrough, before/after, etc.).
 
-The full reference for what makes this work is `methodology.md` — **read it before you do anything else**. Concrete details on visual style, timing, camera math, ffmpeg flags, and the 10 pitfalls that bite first-try attempts.
+What stays constant across every pattern:
+- **Real brand assets** pulled from the repo (logo SVG, design tokens, fonts).
+- **Linear/Vercel/Stripe-grade visual polish** (soft shadows, real typography, single hero moment).
+- **Deterministic `__setTime(t)` timeline** so Playwright captures perfect frames every render.
+- **Specific, named content** wherever the animation makes a claim — no generic "AI saves money" copy.
+
+The full reference for what makes this work is `methodology.md` — **read it before doing anything else**. Concrete details on visual style, timing, camera math, ffmpeg flags, and the 10 pitfalls that bite first-try attempts.
 
 ## Output target
 
-By default produce **two** MP4 files:
-- `promo-static.mp4` — static camera, ~17.5s, the safe default
-- `promo-zoom.mp4` — zoom on text → pan to Send → zoom out, ~19.5s
+Default: **1920×1080 @ 30fps, H.264** with optional music + 1s tail fade. Length depends on the pattern:
+- Brand intro / logo reveal: **5–8s**
+- Stat reveal: **6–10s**
+- Product promo (chat-style or otherwise): **15–22s**
+- Workflow walkthrough: **20–40s**
 
-Both at 1920×1080 @ 30fps, H.264, with optional audio overlay + 1s tail fade ending on the logo.
+Confirm length and aspect ratio with the user if they didn't specify. Default to 16:9 1920×1080 unless they said social/vertical.
+
+When two cuts make sense (e.g. static camera + cinematic camera), ship both.
 
 ## Preflight check
 
@@ -32,8 +42,8 @@ If Playwright chromium isn't cached, run `npx playwright install chromium`. ffmp
 
 Create the workspace:
 ```bash
-mkdir -p promo-animation/{frames,frames-zoom}
-cd promo-animation
+mkdir -p product-animation/frames
+cd product-animation
 ```
 
 ## The 4-phase pipeline
@@ -46,67 +56,50 @@ Spawn the brand-extractor with the prompt in `agents/01-brand-extractor.md`. Pas
 - The repo root path
 - A few hints about what the product does
 
-It returns a JSON-ish summary of: real logo SVG path, exact hex tokens, font stack, hero chat-UI conventions (border-radius, padding, placeholder copy, primary button style), and the product's tagline / product name.
+It returns a JSON of: real logo SVG path, exact hex tokens, font stack, hero UI conventions (border-radius, padding, primary button style), product name + tagline.
 
-**Copy the real wordmark SVG into the workspace** (`promo-animation/<product>-wordmark.svg`). Inline brand assets, no rasters.
+**Copy the real wordmark SVG into the workspace** (e.g. `<product>-wordmark.svg`). Inline brand assets, no rasters.
 
-### Phase 2 — Script writing (subagent)
+### Phase 2 — Concept + script (subagent)
 
-Spawn the script-writer with the prompt in `agents/02-script-writer.md`. Pass it the brand summary from phase 1 plus what the product does. It returns a structured script:
-- Cold open headline (top line + accent-color bottom line) + subtitle + 18-20 jargon "floaters"
-- Hero query (what the user types — short, naive, specific)
-- Thinking-bubble intro line + 8 tool names with `runFor` durations
-- Hero result card: HTS code or equivalent, title, before/after, $/year, complexity caveat, 2 action button labels
-- 3 "other opportunities" chips with names + $ amounts
-- Logo tagline + CTA pill text
+Spawn the script-writer with the prompt in `agents/02-script-writer.md`. Pass it the brand summary from phase 1, what the product does, and what kind of animation the user asked for (promo, brand intro, stat reveal, etc.).
 
-The data shape exactly matches `CASES.BIGGEST` in `templates/promo.html` — that template already contains a complete working example (a fictional "Atlas Trade" / Converse Chuck Taylor reclassification scenario) you can read for reference, then swap out for the real product.
+It returns:
+- **Animation pattern** picked for this product (e.g. "chat-demo", "stat-reveal", "brand-intro")
+- **Storyboard** with scene timings: cold open → main content → outro
+- **The exact text/numbers/visuals** to feature in each scene
 
-### Phase 3 — Domain case research (subagent)
+If the pattern is `chat-demo`, the template in `templates/chat-demo.html` is a complete working starting point — fill in the `CASES.BIGGEST` data structure with the script's content. For other patterns, build the HTML from scratch using the animation engine described in `methodology.md` § 2 — same `__setTime(t)` driver, same easing toolkit, same Playwright capture.
 
-Spawn the case-researcher with the prompt in `agents/03-case-researcher.md`. Pass it the product domain. It returns ONE canonical, named, dramatic before/after with real numbers:
-- Real entity (company / case / ruling / patent)
-- Concrete before/after with units
-- A headline number big enough to be the hero (5-7 figures)
-- 3-4 "also found" lower-impact cases for the secondary chips
+### Phase 3 — Content research (subagent)
 
-For trade/customs: famous tariff-engineering wins (Converse Chuck Taylor felt-sole, Marvel X-Men non-human toys, Ford Transit cargo van, Snuggie blanket). For other domains, find the equivalent — pricing case studies, well-known design patents, etc.
+Spawn the case-researcher with the prompt in `agents/03-case-researcher.md`. Pass it the product domain and the animation pattern.
+
+What it returns depends on the pattern:
+- **Chat demo / promo:** ONE canonical, named, dramatic before/after with real numbers (the "Converse Chuck Taylor moment" for the domain) + 3-4 secondary cases.
+- **Stat reveal:** ONE big public metric the product can credibly own, with a citation.
+- **Brand intro / logo reveal:** the company's actual headline, real customer count, real launch story — anything verifiable to put on screen.
+- **Workflow walkthrough:** the most common real user journey, named steps from the product itself.
+
+Specific, named, verifiable wherever the animation makes a claim.
 
 ### Phase 4 — Build & render
 
-Combine the outputs into the promo.html template, render, encode.
+Combine the outputs into the chosen HTML template (or one you wrote from scratch), render frames with Playwright, encode with ffmpeg.
 
 ## Build phase
 
-1. **Copy templates** into the workspace:
-   ```bash
-   cp ~/.claude/skills/promo-animation/templates/promo.html .
-   cp ~/.claude/skills/promo-animation/templates/render.js .
-   cp ~/.claude/skills/promo-animation/templates/render-zoom.js .
-   ```
+The build differs slightly per pattern. The shared shape:
 
-2. **Substitute placeholders** in `promo.html`. The template uses these markers (search-and-replace via Edit tool):
+1. **Copy or write the animation HTML.**
+   - If the script-writer picked **chat-demo**, copy `templates/chat-demo.html` into the workspace and edit the `CASES.BIGGEST` data object with the phase-2 script content + phase-3 research. Also swap the brand `:root { --tokens }`, header text ("Atlas Trade", "Intelligence", badge), URL bar, wordmark `<img src>`, and logo-outro tagline + CTA.
+   - For **other patterns** (brand intro, stat reveal, walkthrough, before/after), write the HTML from scratch using the animation engine — `methodology.md` § 2 shows the deterministic timeline pattern. Reuse the design rules from `reference/design-rules.md`, the camera math from `reference/camera-modes.md`, and the same Playwright render contract.
 
-   | Marker | Source | Example |
-   |---|---|---|
-   | `{{PRODUCT_NAME}}` | phase 1 | `Atlas Trade` |
-   | `{{PRODUCT_SUBTITLE}}` | phase 1 | `Intelligence` |
-   | `{{PRODUCT_BADGE}}` | phase 1 | `Trade copilot` |
-   | `{{PRODUCT_DOMAIN}}` | phase 1 | `app.atlas.trade` |
-   | `{{WORDMARK_SRC}}` | phase 1 | `atlas-wordmark.svg` |
-   | `{{BRAND_PRIMARY}}` | phase 1 tokens | `#0B494B` |
-   | `{{BRAND_ACCENT}}` | phase 1 tokens | `#1CB4BA` |
-   | `{{COLD_HEADLINE_TOP}}` | phase 2 | `Stop overpaying.` |
-   | `{{COLD_HEADLINE_ACCENT}}` | phase 2 | `Start asking.` |
-   | `{{COLD_SUBTITLE}}` | phase 2 | `U.S. importers leave billions...` |
-   | `{{FLOATERS_JSON}}` | phase 2 | `['HTS 9503','§301 +7.5%',...]` |
-   | `{{CASE_OBJECT}}` | phases 2+3 | full `BIGGEST: {...}` block |
-   | `{{LOGO_TAGLINE}}` | phase 2 | `Trade strategy, at the speed of a prompt.` |
-   | `{{LOGO_CTA}}` | phase 2 | `atlas.trade →` |
+2. **Copy a render script.** For chat-demo use `templates/render-chat-demo.js` (525 frames, ~17.5s) or `render-chat-demo-zoom.js` (585 frames, ~19.5s, cinematic camera). For custom patterns, copy one of the render scripts and update the `DURATION` constant — the rest works as-is.
 
-3. **Verify locally first** — open `promo.html` in a browser. The animation auto-plays in a loop. Eyeball the cold open, the typed query, the hero card, the logo out. If anything looks wrong, fix it before rendering frames (5 min in browser saves 3 min of rendering per iteration).
+3. **Verify in browser first.** Open the HTML directly — the animation auto-plays in a loop. Eyeball every scene. 5 min in a browser saves 3 min of rendering per iteration.
 
-4. **Smoke render** — 6–8 keyframes at scene boundaries before doing the full 525-frame render. See `scripts/smoke.js` for the pattern. Spend 30s here; catches layout overlap, font fallback, off-screen elements before you commit.
+4. **Smoke render** — 6–8 keyframes at scene boundaries before committing to the full render. See `scripts/smoke.js` for the pattern. Catches layout overlap, font fallback, off-screen elements in 30s.
 
 ## Render phase
 
@@ -115,61 +108,57 @@ Install Playwright in the workspace:
 npm install playwright@1.58.0 --no-save --no-audit --no-fund --silent
 ```
 
-Render both versions:
+Render the frames:
 ```bash
-node render.js          # writes frames/f_*.png  (525 frames, ~95s)
-node render-zoom.js     # writes frames-zoom/f_*.png  (585 frames, ~110s)
+node render-<pattern>.js          # writes frames/f_*.png  (~3-5 frames per second of duration × FPS)
 ```
 
-Encode with ffmpeg:
+Encode with ffmpeg. Adjust `-t` to your animation's duration and `afade=t=out:st=X` to land the fade 1s before the end:
 ```bash
-# Static — adjust audio path and fade timing to your duration
 ffmpeg -y -framerate 30 -i frames/f_%05d.png \
   -i /path/to/music.mp3 \
   -c:v libx264 -pix_fmt yuv420p -crf 18 -preset medium -movflags +faststart \
-  -c:a aac -b:a 192k -af "afade=t=out:st=16.5:d=1.0" \
-  -t 17.5 -shortest promo-static.mp4
-
-# Zoom — same shape, longer duration
-ffmpeg -y -framerate 30 -i frames-zoom/f_%05d.png \
-  -i /path/to/music.mp3 \
-  -c:v libx264 -pix_fmt yuv420p -crf 18 -preset medium -movflags +faststart \
-  -c:a aac -b:a 192k -af "afade=t=out:st=18.5:d=1.0" \
-  -t 19.5 -shortest promo-zoom.mp4
+  -c:a aac -b:a 192k -af "afade=t=out:st=<DURATION-1>:d=1.0" \
+  -t <DURATION> -shortest animation.mp4
 ```
 
 `yuv420p` is required for Slack/LinkedIn/Twitter playback. `+faststart` enables streaming. `crf 18` is near-visually-lossless.
 
-If no audio is provided, drop `-i music.mp3`, `-c:a aac -b:a 192k`, and `-af` flags.
+If no audio is provided, drop `-i music.mp3`, `-c:a aac -b:a 192k`, and `-af` flags. `scripts/encode.sh` wraps this with sane defaults.
 
 ## Quality gate — read before declaring done
 
-Verify before showing the user:
+Universal (every pattern):
+- [ ] Real brand wordmark inline (SVG `<img>`, not Inter Tight bold styled as a logo).
+- [ ] All colors are from the product's tokens — never invented hex.
+- [ ] Animation is referenced from the codebase — its UI, fonts, copy idioms recognizable.
+- [ ] Single hero moment. One number, one reveal, one CTA — not 12 competing focal points.
+- [ ] Any number that ticks uses `tabular-nums` (don't jitter horizontally).
+- [ ] Animations land — no element appears at the exact same instant as another fades out; respect entry/exit windows.
+- [ ] Logo holds long enough at the end (≥ 3s for branded outros).
+- [ ] MP4 plays in QuickTime, exactly the target resolution × fps, file size reasonable (1–6 MB typical).
+- [ ] Open the MP4 with `open <name>.mp4` for the user.
 
-- [ ] Real brand wordmark is in the header and logo-out (not Inter Tight bold text styled as a logo).
-- [ ] All colors are from `tokens.ts` (or the design doc) — never invented hex.
-- [ ] Hero `$` number is JetBrains Mono, weight 800, `tabular-nums`, color `--success` token, **6 digits or more**.
-- [ ] Tool chain has 8 chips, pacing ~3s total — fake-feeling if shorter.
+For **chat-demo** specifically, additional checks (see `reference/design-rules.md`):
+- [ ] Hero $ number is JetBrains Mono / weight 800 / 6 digits or more.
+- [ ] Tool chain has ~8 chips, pacing ~3s — anything shorter reads fake.
 - [ ] User bubble appears AFTER the bar clears, never simultaneously.
-- [ ] Thinking bubble slides *up and out of frame* before the result bubble fades in — never both opaque.
-- [ ] Caret only appears during typing (and full-text hold), never on the placeholder `Ask anything…`.
-- [ ] Logo holds for 4s at the end.
-- [ ] MP4 plays in QuickTime, file size 1–4 MB, exactly 1920×1080 @ 30fps.
-- [ ] Open both MP4s with `open promo-static.mp4` and `open promo-zoom.mp4` for the user.
+- [ ] Thinking bubble slides up-and-out before the result fades in — never both opaque.
+- [ ] Caret only appears during typing, never on the placeholder.
 
 Clean up before declaring done:
 ```bash
-rm -rf frames frames-zoom node_modules package.json package-lock.json
+rm -rf frames frames-zoom node_modules package.json package-lock.json smoke_*.png
 ```
 
-Final workspace should contain: `promo.html`, `render.js`, `render-zoom.js`, `<product>-wordmark.svg`, `promo-static.mp4`, `promo-zoom.mp4`.
+Final workspace should contain: the HTML, render script(s), wordmark SVG, and the finished MP4(s).
 
 ## File map
 
 ```
 ~/.claude/skills/promo-animation/
 ├── SKILL.md                  ← you are here
-├── methodology.md            ← deep reference, READ FIRST
+├── methodology.md            ← deep reference, READ FIRST — the universal animation engine
 ├── agents/
 │   ├── 01-brand-extractor.md   ← phase 1 subagent prompt
 │   ├── 02-script-writer.md     ← phase 2 subagent prompt
@@ -187,4 +176,6 @@ Final workspace should contain: `promo.html`, `render.js`, `render-zoom.js`, `<p
     └── timing-blueprint.md     ← scene timings
 ```
 
-When in doubt, read `templates/promo.html` — it's a complete working example you can render right now (a fictional "Atlas Trade" / Converse Chuck Taylor reclassification scenario). Every visual rule, timing, and pitfall in `methodology.md` is encoded in that file.
+When in doubt, read `templates/chat-demo.html` — it's a complete working example you can render right now (a fictional "Atlas Trade" / Converse Chuck Taylor reclassification scenario). It's the canonical reference for the chat-demo pattern AND the deterministic animation engine — every visual rule, timing decision, and pitfall in `methodology.md` is encoded in that file.
+
+For other animation patterns, you write the HTML from scratch — but the animation engine (§ 2 of `methodology.md`), render contract (§ 5), and design rules (`reference/design-rules.md`) all carry over unchanged.

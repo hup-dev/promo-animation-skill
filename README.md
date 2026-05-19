@@ -1,19 +1,21 @@
-# promo-animation — a Claude Code skill for 17–20s SaaS product promos
+# promo-animation — a Claude Code skill for polished product animations
 
-Build a polished MP4 product promo — **Linear/Vercel/Stripe quality** — for any SaaS in your codebase. Drops 3 subagents on the repo to extract the real brand tokens, write a 3-act script, and research a named domain case; then renders deterministic Playwright frames + ffmpeg to MP4.
+Build a polished, **Linear/Vercel/Stripe-quality** animation MP4 for any product in your codebase. Pulls the real logo SVG, design tokens, and fonts out of the repo so the result actually looks like *your* product — not a generic AI mockup.
 
-```
-[ chat-bar typing ]  →  [ AI thinking with tool chain ]  →  [ hero $ number ]  →  [ logo ]
-```
+## What you can build
 
-## What you get
+Anything you can describe as a **5–30 second animated sequence**:
 
-Two cuts by default, both 1920×1080 @ 30fps, H.264:
+- **Product promo** — typed query → AI response with a hero $ number (the canonical chat-demo example)
+- **Brand intro** — animated logo reveal + headline + CTA
+- **Feature showcase** — a few hero moments stitched with smooth transitions
+- **Stat reveal** — a single dramatic number ticking up against your brand
+- **Workflow walkthrough** — step-by-step UI states moving forward
+- **Before/after** — comparison animation with a transition
+- **Title card / hero loop** — animated header for a landing page
+- **Anything else** — the skill is a deterministic animation engine, not a fixed format
 
-- **`promo-static.mp4`** — static camera, ~17.5s
-- **`promo-zoom.mp4`** — zoom on text → pan to Send → zoom out, ~19.5s
-
-Optional music overlay with a 1s tail fade landing on the logo.
+By default it produces **1920×1080 @ 30fps H.264 MP4**, with optional music + tail fade. Aspect ratio, resolution, framerate, and duration are all parameters.
 
 ## Install
 
@@ -21,7 +23,7 @@ Optional music overlay with a 1s tail fade landing on the logo.
 git clone https://github.com/<you>/promo-animation-skill ~/.claude/skills/promo-animation
 ```
 
-That's it. The skill auto-registers in any project once it's under `~/.claude/skills/`.
+That's it — the skill auto-registers in any project once it lives under `~/.claude/skills/`.
 
 ## Use
 
@@ -31,7 +33,7 @@ In Claude Code, from inside any product repo:
 /promo-animation
 ```
 
-…or just describe what you want (`make a promo video for this product`) and Claude will invoke the skill automatically — the description matches phrases like "promo video", "demo animation", "product trailer", "marketing clip", "hero video", "sizzle reel".
+…or just describe what you want — Claude will invoke the skill automatically. The description matches phrases like "promo video", "demo animation", "product trailer", "brand intro", "stat animation", "logo reveal", "marketing clip", "hero video".
 
 ## Requirements
 
@@ -40,74 +42,86 @@ In Claude Code, from inside any product repo:
 | **Node 18+** | runs the Playwright renderer |
 | **Playwright + Chromium** | `npx playwright install chromium` once |
 | **ffmpeg** | encodes PNG frames → MP4, mixes audio |
-| **A browser** | optional, but useful for live-previewing the HTML before rendering |
 
-## How it works (4-phase pipeline)
+## How it works
 
-1. **Brand extractor** (`agents/01-brand-extractor.md`) — reads `tokens.ts` / `theme.ts` / `tailwind.config.js`, finds the real logo SVG, identifies the hero chat-UI component. Returns a JSON blob of every literal hex / font / radius / padding the target product actually uses.
+The skill is a **toolkit + methodology**, not a fixed template:
 
-2. **Script writer** (`agents/02-script-writer.md`) — drafts the 3-act storyboard: bold cold-open headline, naive customer query, AI thinking with 8 tool chips, GenUI result card with a single hero $ number, logo + CTA.
+1. **Brand extractor** subagent reads `tokens.ts` / `theme.ts` / `tailwind.config.js`, finds the real logo SVG, fonts, and any hero UI components. Returns a JSON of every literal hex / weight / radius your product actually uses.
 
-3. **Case researcher** (`agents/03-case-researcher.md`) — finds the domain's "Converse Chuck Taylor moment." One real, named, dramatic before/after with a 6-7 figure savings number.
+2. **Concept + script** subagent picks the right animation pattern for the product and writes the storyboard — what to show, when, what numbers to feature, what to say at the end.
 
-4. **Build & render** — fills `templates/promo.html` with the three JSON outputs, copies the real wordmark SVG out of the repo, smoke-tests 8 keyframes (catches layout bugs fast), then renders ~500 frames via Playwright and encodes with ffmpeg.
+3. **Content research** subagent finds the actual content to feature: a real case study, a published metric, a customer story, a famous before/after — whatever demonstrates the product's value with named, verifiable specifics. Not "AI helps you save money" — actual entities, court cases, dollar amounts.
 
-The full reference for every visual rule, timing, camera math, and pitfall is in [`methodology.md`](methodology.md).
+4. **Build & render** — fills the chosen template with the three JSON outputs, copies the real wordmark SVG out of the repo, smoke-tests 8 keyframes (catches layout bugs fast), then renders ~500 frames via Playwright and encodes with ffmpeg.
 
 ## What separates this from "AI made a video"
 
-- **Real brand assets, inline.** Pulls the actual logo SVG out of the repo and uses it as an `<img>` — no Inter Tight 700 styled to look like a wordmark.
-- **Real colors.** All hex pulled from the design tokens. No invented palette.
-- **Single hero number.** 6-7 figures, JetBrains Mono weight 800, `tabular-nums` so it doesn't jitter as it ticks.
-- **Specific, named case study.** Not "save money with AI" — actual court cases, ruling numbers, product modifications, real companies.
-- **Chat UI mirrors the real product.** Border-radius, padding, focus ring, primary button — all measured from the target's actual `ChatInput`/`Composer` component.
-- **Deterministic timeline.** Frame-by-frame Playwright capture, not video screen recording. No jitter, no skipped frames, perfect at any duration.
+- **Real brand assets inline.** The skill pulls the actual logo SVG out of the repo and uses it as an `<img>` — no Inter Tight 700 styled to look like a wordmark.
+- **Real colors and fonts.** Every hex, every font weight, every radius — measured from the real design tokens. Never invented.
+- **Deterministic frame-by-frame capture.** Playwright `__setTime(t)` driver means perfect timing, no jitter, no skipped frames, identical output every render.
+- **Single hero moment per animation.** One stat, one reveal, one CTA — not 12 things competing for attention.
+- **Specific, named content.** When the animation references something (a case study, a metric, a customer), it cites a real source with real numbers.
 
 ## File layout
 
 ```
 promo-animation-skill/
-├── SKILL.md                    ← entry point: orchestrator + quality gate
-├── methodology.md              ← deep reference, read first
+├── SKILL.md                       ← entry point: orchestrator + quality gate
+├── methodology.md                 ← deep reference, read first
 ├── agents/
 │   ├── 01-brand-extractor.md
 │   ├── 02-script-writer.md
 │   └── 03-case-researcher.md
 ├── templates/
-│   ├── promo.html              ← complete working example (Atlas Trade demo)
-│   ├── render.js               ← Playwright frame capture (static)
-│   ├── render-zoom.js          ← Playwright frame capture (zoom)
-│   └── atlas-wordmark.svg      ← placeholder SVG — swap for your product's
+│   ├── chat-demo.html             ← canonical "AI typed query → result" pattern
+│   ├── render-chat-demo.js        ← Playwright renderer (static camera)
+│   ├── render-chat-demo-zoom.js   ← Playwright renderer (zoom camera)
+│   └── atlas-wordmark.svg         ← placeholder SVG — swap for your product's
 ├── scripts/
-│   ├── smoke.js                ← 8-keyframe smoke test
-│   └── encode.sh               ← ffmpeg wrapper
+│   ├── smoke.js                   ← 8-keyframe smoke test
+│   └── encode.sh                  ← ffmpeg wrapper
 └── reference/
-    ├── design-rules.md         ← visual rules (Linear/Vercel/Stripe checklist)
-    ├── camera-modes.md         ← static vs zoom decision + camera math
-    └── timing-blueprint.md     ← scene-by-scene timings
+    ├── design-rules.md            ← visual rules (Linear/Vercel/Stripe checklist)
+    ├── camera-modes.md            ← static vs zoom decision + math
+    └── timing-blueprint.md        ← scene-by-scene timings
 ```
 
-## Quick try (without invoking the skill)
+## The animation engine (universal pattern)
 
-To see what the template produces:
+Every animation this skill produces uses the same deterministic timeline:
+
+```js
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const range = (t,a,b) => Math.max(0, Math.min(1, (t-a)/(b-a)));
+const lerp  = (a,b,t) => a + (b-a)*t;
+
+window.__setTime = function(t) { window.__TIME__ = t; timeline(t); };
+
+function timeline(t) {
+  // Every visual element's opacity/transform is a pure function of t.
+  // No CSS transitions, no setInterval — Playwright drives __setTime
+  // frame-by-frame so the output is identical every render.
+}
+```
+
+Playwright takes screenshots; ffmpeg stitches them into MP4. Same pipeline for a 5-second logo reveal as for a 30-second product demo.
+
+Read [`methodology.md`](methodology.md) for the full pattern, including the easing toolkit, scene fade windows, camera math, and the 10 pitfalls that bite first-try attempts.
+
+## Quick try (render the canonical example)
 
 ```bash
 cd templates
 npm install playwright@1.58.0 --no-save
-node render.js                                  # ~95s, writes frames/
+node render-chat-demo.js                       # ~95s, writes frames/
 ffmpeg -y -framerate 30 -i frames/f_%05d.png \
   -c:v libx264 -pix_fmt yuv420p -crf 18 \
   -movflags +faststart -t 17.5 demo.mp4
 open demo.mp4
 ```
 
-This renders the canonical Atlas Trade example. Use this as the visual reference for what "done" looks like.
-
-## Customizing the look
-
-Most of the look is data-driven from the case object in `templates/promo.html` (search for `const CASES = {`). Swap the brand tokens in `:root { --... }`, replace the wordmark SVG, fill in the case data with what the script-writer subagent returned, and you're done.
-
-For deeper customization — different scene structure, additional camera moves, multi-scene demos — read [`methodology.md`](methodology.md) § 2 (the deterministic timeline pattern) and § 4 (camera math).
+This produces the "Atlas Trade" chat demo — a complete working animation using the placeholder brand. Use it as the visual reference for what "done" looks like.
 
 ## License
 
@@ -119,6 +133,5 @@ Built on top of:
 - [Playwright](https://playwright.dev/) for deterministic browser screenshotting
 - [ffmpeg](https://ffmpeg.org/) for video encoding
 - [Inter](https://rsms.me/inter/), [Inter Tight](https://fonts.google.com/specimen/Inter+Tight), [JetBrains Mono](https://www.jetbrains.com/lp/mono/) — all SIL Open Font License
-- Music in finished promos sourced from [Pixabay](https://pixabay.com/music/) (royalty-free, CC0)
 
-The methodology was distilled from an end-to-end production session — every visual rule, timing, and pitfall in this skill corresponds to a real iteration that taught the lesson.
+The methodology was distilled from a real end-to-end production session — every visual rule, timing, and pitfall in this skill corresponds to an iteration that taught the lesson.

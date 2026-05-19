@@ -1,12 +1,25 @@
-# Phase 3 — Domain Case Researcher
+# Phase 3 — Content Researcher
 
-Use this prompt when invoking the subagent via the Agent tool. Replace `{{DOMAIN}}` with the product's domain area.
+Use this prompt when invoking the subagent via the Agent tool. Replace `{{DOMAIN}}`, `{{PATTERN}}`, and `{{PRODUCT_DESCRIPTION}}` with the product's domain area, the animation pattern chosen by phase 2, and a 1-line product summary.
 
 ---
 
-Find the single best canonical, named, dramatic before/after case study to feature in a 17–20s product promo. The "Converse Chuck Taylor felt-sole reclassification" of this domain.
+Find the **real, named, verifiable content** to put on screen in the animation. Wherever the animation makes a claim (a number, a case, a customer, an outcome), it should be backed by a public source you can cite.
 
 **Domain:** {{DOMAIN}}
+**Pattern:** {{PATTERN}}
+**Product:** {{PRODUCT_DESCRIPTION}}
+
+## What to return depends on the pattern
+
+- **chat-demo / product promo:** ONE canonical "Chuck Taylor moment" case study — see rules below.
+- **stat-reveal:** ONE big number the product can credibly own + the source it traces to.
+- **brand-intro / logo reveal:** the company's actual headline / tagline / customer count / launch milestone — whatever's true and on their site.
+- **workflow-walkthrough:** the most common real user journey, with actual step names from the product.
+- **before-after:** the named "before" state and "after" state with quantitative deltas.
+- **feature-showcase:** 3–5 hero moments with named features and the metric each delivers.
+
+The rest of this document focuses on the **chat-demo / product promo** case — it's the densest content research the skill does. For other patterns, the same principles apply (real, named, verifiable, dramatic delta) but the output shape is simpler — return whatever is needed for the storyboard from phase 2.
 
 ## What makes a great case
 

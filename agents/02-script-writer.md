@@ -1,10 +1,10 @@
-# Phase 2 — Script Writer
+# Phase 2 — Concept + Script Writer
 
-Use this prompt when invoking the subagent via the Agent tool. Replace `{{BRAND_JSON}}` and `{{PRODUCT_DESCRIPTION}}` with the phase-1 output and a 1–2 sentence description.
+Use this prompt when invoking the subagent via the Agent tool. Replace `{{BRAND_JSON}}`, `{{PRODUCT_DESCRIPTION}}`, and `{{USER_REQUEST}}` with the phase-1 output, a 1–2 sentence description of the product, and what the user actually asked for.
 
 ---
 
-You're writing a 17–20 second promo animation script for a SaaS product. The format is a *single typed query → AI thinks → AI returns a result with a big $ number*. Linear/Vercel/Stripe vibe — punchy, specific, named.
+You're writing the concept + script for a polished product animation (5–30 seconds, MP4). Linear/Vercel/Stripe vibe — punchy, specific, named, never generic.
 
 **Brand & product context (phase 1 output):**
 ```json
@@ -13,9 +13,28 @@ You're writing a 17–20 second promo animation script for a SaaS product. The f
 
 **What the product does:** {{PRODUCT_DESCRIPTION}}
 
-## Required output shape
+**What the user asked for:** {{USER_REQUEST}}
 
-Return a single fenced ```json block. Match this shape **exactly** — these fields plug directly into the promo.html template:
+## Step 1 — Pick the pattern
+
+Choose ONE animation pattern that fits both the product and the request:
+
+| Pattern | Duration | When to pick |
+|---|---|---|
+| **chat-demo** | 15–22s | AI/copilot products. User types a query → AI thinks → result with a hero $ number. Canonical template exists at `templates/chat-demo.html`. |
+| **stat-reveal** | 6–10s | One big number is THE story. Animated count-up against the brand. |
+| **brand-intro** | 5–8s | Logo reveal + headline + CTA. Use as a video opener or social bumper. |
+| **workflow-walkthrough** | 20–40s | Step-by-step UI states. Product has multi-step value (onboarding, automation, build pipelines). |
+| **before-after** | 8–14s | Migration / improvement story. Two states with a dramatic transition. |
+| **feature-showcase** | 18–30s | A few hero moments stitched together. Better than chat-demo when the product is visual rather than conversational. |
+
+For non-chat patterns, you write the animation HTML from scratch using the engine in `methodology.md` § 2 — same `__setTime(t)` driver, easing toolkit, scene fade windows, render contract. The chat-demo template is the only fully prebuilt one; the others are buildable in ~100 lines of HTML/CSS/JS using the same primitives.
+
+## Step 2 — Write the script
+
+Return a single fenced ```json block.
+
+For **chat-demo**, match this shape exactly (drops directly into `templates/chat-demo.html`):
 
 ```json
 {
@@ -66,6 +85,47 @@ Return a single fenced ```json block. Match this shape **exactly** — these fie
 ```
 
 The example above is the canonical reference (a fictional "Atlas Trade" tariff/customs copilot) — yours should match the structure with content specific to the actual product.
+
+For **other patterns**, return this shape instead:
+
+```json
+{
+  "pattern": "stat-reveal" | "brand-intro" | "workflow-walkthrough" | "before-after" | "feature-showcase",
+  "duration_seconds": 8.5,
+  "concept": "One short paragraph explaining the animation: what the camera shows, in what order, with what hero moment.",
+  "scenes": [
+    {
+      "name": "cold-open",
+      "in": 0.0,
+      "out": 1.5,
+      "elements": [
+        { "kind": "headline", "text": "Stop overpaying.", "style": "display, 92px, weight 700" },
+        { "kind": "headline", "text": "Start asking.", "style": "display, 92px, weight 700, brand-accent gradient" }
+      ]
+    },
+    {
+      "name": "hero-stat",
+      "in": 1.5,
+      "out": 6.0,
+      "elements": [
+        { "kind": "ticking-number", "label": "duty saved in 2024 by Atlas customers", "from": 0, "to": 12400000, "rampSeconds": 1.6, "style": "JetBrains Mono 120px, weight 800, brand-success" }
+      ]
+    },
+    {
+      "name": "logo-out",
+      "in": 6.0,
+      "out": 8.5,
+      "elements": [
+        { "kind": "wordmark-svg", "size": "520px" },
+        { "kind": "tagline", "text": "Trade strategy, at the speed of a prompt." },
+        { "kind": "cta-pill", "text": "atlas.trade →" }
+      ]
+    }
+  ]
+}
+```
+
+This shape is a generic storyboard. Claude (the orchestrator) writes the HTML from scratch based on `methodology.md` § 2 and the design rules. Be specific about element styling, positions, and motion — that's where the polish lives.
 
 ## Writing rules
 
