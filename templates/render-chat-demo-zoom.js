@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Render promo.html in ZOOM mode (zoom on text → pan to Send → pan-and-zoom-out → reveal).
+ * Render chat-demo.html in ZOOM mode (zoom on text → pan to Send → pan-and-zoom-out → reveal).
  * Output: frames-zoom/*.png  (then encode promo-zoom.mp4 separately).
  */
 const { chromium } = require('playwright');
@@ -11,7 +11,7 @@ const FPS = 30;
 const DURATION = 19.5;
 const TOTAL_FRAMES = Math.round(FPS * DURATION); // 585
 const OUT_DIR = path.join(__dirname, 'frames-zoom');
-const HTML_PATH = 'file://' + path.join(__dirname, 'promo.html');
+const HTML_PATH = 'file://' + path.join(__dirname, 'chat-demo.html');
 
 (async () => {
   if (fs.existsSync(OUT_DIR)) {

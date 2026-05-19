@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Render promo.html to a sequence of PNG frames using Playwright.
+ * Render chat-demo.html to a sequence of PNG frames using Playwright.
  * Frames are deterministic: we set window.__TIME__ per frame and screenshot.
  */
 const { chromium } = require('playwright');
@@ -11,7 +11,7 @@ const FPS = 30;
 const DURATION = 17.5;
 const TOTAL_FRAMES = Math.round(FPS * DURATION); // 525
 const OUT_DIR = path.join(__dirname, 'frames');
-const HTML_PATH = 'file://' + path.join(__dirname, 'promo.html');
+const HTML_PATH = 'file://' + path.join(__dirname, 'chat-demo.html');
 
 (async () => {
   // clean frame dir

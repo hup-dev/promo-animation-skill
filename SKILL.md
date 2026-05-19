@@ -164,9 +164,10 @@ Final workspace should contain: the HTML, render script(s), wordmark SVG, and th
 │   ├── 02-script-writer.md     ← phase 2 subagent prompt
 │   └── 03-case-researcher.md   ← phase 3 subagent prompt
 ├── templates/
-│   ├── promo.html              ← master HTML with {{markers}}
-│   ├── render.js               ← static render (Playwright)
-│   └── render-zoom.js          ← zoom render
+│   ├── chat-demo.html              ← canonical chat-demo pattern (working example)
+│   ├── render-chat-demo.js         ← static-mode Playwright renderer
+│   ├── render-chat-demo-zoom.js    ← zoom-mode renderer
+│   └── atlas-wordmark.svg          ← placeholder SVG
 ├── scripts/
 │   ├── smoke.js                ← keyframe smoke test
 │   └── encode.sh               ← ffmpeg wrapper

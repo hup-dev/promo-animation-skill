@@ -17,6 +17,6 @@ smoke_*.png
 Thumbs.db
 
 # Editors
-.vscode/
 .idea/
 *.swp
+config.bat

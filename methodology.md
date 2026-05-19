@@ -1,6 +1,6 @@
 # Promo-Animation Methodology
 
-Pipeline for a 17-20s polished SaaS promo MP4 from an existing codebase. Reference implementation: `templates/promo.html` in this skill (the canonical example uses a fictional "Atlas Trade" tariff/customs copilot to demonstrate the structure).
+Pipeline for a polished product animation MP4 (typical length 5–30s) from an existing codebase. Reference implementation: `templates/chat-demo.html` in this skill (the canonical example uses a fictional "Atlas Trade" tariff/customs copilot to demonstrate the chat-demo pattern — the full animation engine carries over to other patterns).
 
 ---
 
@@ -11,7 +11,7 @@ Pipeline for a 17-20s polished SaaS promo MP4 from an existing codebase. Referen
 Harvest before writing animation code:
 
 1. **Tokens.** Read `apps/web/src/tokens.ts`. Lift literal hex into `:root { --token: #hex }`. Grab brand-primary/accent, text-primary/body/secondary/muted, bg-page/surface/hover, border-default/light, success/warning. Never invent colors.
-2. **Logo SVG.** Copy the real one (`apps/web/src/assets/svgs/Logo.svg`) next to `promo.html` as `<product>-wordmark.svg`, referenced via `<img>`. Inline SVG stays crisp at zoom — never use a raster.
+2. **Logo SVG.** Copy the real one (typically at `apps/web/src/assets/svgs/Logo.svg` or `public/logo.svg`) next to the animation HTML as `<product>-wordmark.svg`, referenced via `<img>`. Inline SVG stays crisp at zoom — never use a raster.
 3. **UI shell.** Pick the single hero surface users recognize (search for `ChatInput`, `Composer`, `Hero`, `SearchBar`). Mirror border-radius, padding, font sizes, focus ring, primary button exactly.
 4. **Design doc.** If `docs/DESIGN_TOKEN_GUIDE.md` or similar exists, read for spacing and font weights — unusual weights (e.g. Inter 425/475) matter.
 
@@ -29,7 +29,7 @@ Find one canonical, named, dramatic before/after. The archetype is **Converse Ch
 
 ### Phase 4 — Build & render
 
-Self-contained `promo.html` (Google Fonts `<link>`, inline style/script, sibling SVG). `render.js` (Playwright) screenshots deterministic frames. `ffmpeg` encodes PNGs + optional audio + tail fade.
+Self-contained animation HTML (Google Fonts `<link>`, inline style/script, sibling SVG). A Playwright render script screenshots deterministic frames. `ffmpeg` encodes PNGs + optional audio + tail fade.
 
 ---
 
@@ -164,9 +164,9 @@ ffmpeg -y -framerate 30 -i frames/f_%05d.png \
 ---
 
 **Reference files (relative to this skill):**
-- `templates/promo.html` — the canonical animation source
-- `templates/render.js` — static-mode Playwright renderer
-- `templates/render-zoom.js` — zoom-mode renderer
+- `templates/chat-demo.html` — the canonical animation source
+- `templates/render-chat-demo.js` — static-mode Playwright renderer
+- `templates/render-chat-demo-zoom.js` — zoom-mode renderer
 - `agents/01-brand-extractor.md` — Phase 1 subagent prompt
 - `agents/02-script-writer.md` — Phase 2 subagent prompt
 - `agents/03-case-researcher.md` — Phase 3 subagent prompt
