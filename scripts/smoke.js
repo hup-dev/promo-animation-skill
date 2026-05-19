@@ -12,7 +12,9 @@ const { chromium } = require('playwright');
 const path = require('path');
 
 const ZOOM = process.argv.includes('--zoom');
-const HTML_PATH = 'file://' + path.join(__dirname, 'promo.html');
+// Default: smoke the canonical chat-demo template. Override by editing this path
+// when smoke-testing your own animation HTML.
+const HTML_PATH = 'file://' + path.join(__dirname, '..', 'templates', 'chat-demo.html');
 
 // keyframes covering: cold open, typing, full text, send pulse, tools mid, result, hero ticking, logo
 const SAMPLES_STATIC = [1.0, 3.0, 4.0, 5.5, 7.5, 10.0, 13.0, 16.5];
